@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { toast } from "sonner";
 import { seedRequests, type CollabRequest, type Review } from "./data";
 import type { Profile } from "./logic";
+import { supabase, isSupabaseConfigured } from "./supabase";
 
 export type Status = "Interested" | "Registered" | "Attended" | "Skipped";
 
@@ -64,10 +65,11 @@ interface State {
   interests: Record<string, boolean>; // collab request ids I responded to
   theme: "dark" | "light";
   authModalOpen: boolean;
+  isRealSupabase: boolean;
 }
 
 const initial: State = {
-  user: null, // default to unauthenticated so first landing page showcases full features + Google Auth!
+  user: null, // default to unauthenticated
   profile: { name: "Student", collegeId: "dtu", interests: ["AI", "Web", "Design"], budget: 800, goals: "Win a hackathon this semester" },
   saved: ["e1", "e5"],
   statuses: { e1: "Registered" },
@@ -77,6 +79,7 @@ const initial: State = {
   interests: {},
   theme: "dark",
   authModalOpen: false,
+  isRealSupabase: isSupabaseConfigured,
 };
 
 interface Ctx extends State {
@@ -84,8 +87,8 @@ interface Ctx extends State {
   toggleSave: (id: string) => void;
   setStatus: (id: string, s: Status | null) => void;
   toggleReminder: (id: string) => void;
-  loginWithGoogle: (customUser?: Partial<GoogleUser>) => void;
-  logout: () => void;
+  loginWithGoogle: (customUser?: Partial<GoogleUser>) => Promise<void>;
+  logout: () => Promise<void>;
   setAuthModalOpen: (open: boolean) => void;
 }
 
@@ -96,6 +99,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(initial);
   const [loaded, setLoaded] = useState(false);
 
+  // 1. Load persisted state or active Supabase session
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
@@ -104,16 +108,76 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setState((prev) => ({
           ...prev,
           ...parsed,
-          authModalOpen: false, // never persist open modal state
+          authModalOpen: false,
+          isRealSupabase: isSupabaseConfigured,
         }));
       }
     } catch {}
+
+    // Check live Supabase session if configured
+    if (supabase) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          const u = session.user;
+          const meta = u.user_metadata || {};
+          const liveUser: GoogleUser = {
+            id: u.id,
+            name: meta.full_name || meta.name || u.email?.split("@")[0] || "Student",
+            email: u.email || "",
+            avatar: meta.avatar_url || meta.picture || PRESET_GOOGLE_USERS[0].avatar,
+            collegeId: "dtu",
+            collegeName: "Delhi Technological University",
+            department: "Engineering",
+            verified: true,
+            role: "Google Student",
+          };
+          setState((s) => ({
+            ...s,
+            user: liveUser,
+            profile: { ...s.profile, name: liveUser.name },
+          }));
+        }
+      });
+
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.user) {
+          const u = session.user;
+          const meta = u.user_metadata || {};
+          const liveUser: GoogleUser = {
+            id: u.id,
+            name: meta.full_name || meta.name || u.email?.split("@")[0] || "Student",
+            email: u.email || "",
+            avatar: meta.avatar_url || meta.picture || PRESET_GOOGLE_USERS[0].avatar,
+            collegeId: "dtu",
+            collegeName: "Delhi Technological University",
+            department: "Engineering",
+            verified: true,
+            role: "Google Student",
+          };
+          setState((s) => ({
+            ...s,
+            user: liveUser,
+            profile: { ...s.profile, name: liveUser.name },
+          }));
+        } else if (_event === "SIGNED_OUT") {
+          setState((s) => ({
+            ...s,
+            user: null,
+            profile: { ...s.profile, name: "Student" },
+          }));
+        }
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+
     setLoaded(true);
   }, []);
 
   useEffect(() => {
     if (loaded) {
-      // exclude modal state from storage
       const toSave = { ...state, authModalOpen: false };
       localStorage.setItem(KEY, JSON.stringify(toSave));
     }
@@ -122,7 +186,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const set = (fn: (s: State) => State) => setState(fn);
 
-  const loginWithGoogle = (customUser?: Partial<GoogleUser>) => {
+  const loginWithGoogle = async (customUser?: Partial<GoogleUser>) => {
+    // If real Supabase is configured and not choosing a manual demo user:
+    if (supabase && isSupabaseConfigured && !customUser?.id) {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: window.location.origin,
+          },
+        });
+        if (error) {
+          toast.error("Supabase Google Auth failed", { description: error.message });
+          return;
+        }
+        return;
+      } catch (err: any) {
+        toast.error("Auth error", { description: err.message });
+      }
+    }
+
+    // Fallback or demo user login
     const selected = customUser?.name
       ? {
           id: customUser.id || `usr_${Date.now()}`,
@@ -148,12 +232,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       },
     }));
 
-    toast.success(`Google Account Connected: ${selected.name}`, {
-      description: `Access granted across all campus telemetry nodes (${selected.email})`,
+    toast.success(`Google Account: ${selected.name}`, {
+      description: isSupabaseConfigured
+        ? "Connected through Supabase Authentication"
+        : `Signed in as ${selected.email} (Local session)`,
     });
   };
 
-  const logout = () => {
+  const logout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
     setState((s) => ({
       ...s,
       user: null,
@@ -163,8 +252,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         name: "Student",
       },
     }));
-    toast.info("Signed out of Google Account", {
-      description: "Returning to public guest mode.",
+    toast.info("Signed out of Google account", {
+      description: "Returned to public mode.",
     });
   };
 

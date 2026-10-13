@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { X, Check, ArrowRight, UserPlus, Shield } from "lucide-react";
+import { X, Check, ArrowRight, UserPlus, Shield, Sparkles, Key } from "lucide-react";
 import { useStore, PRESET_GOOGLE_USERS, type GoogleUser } from "@/lib/store";
 import { colleges } from "@/lib/data";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 export function GoogleLogo({ className = "size-5" }: { className?: string }) {
   return (
@@ -37,12 +38,16 @@ export function GoogleAuthModal() {
 
   if (!authModalOpen) return null;
 
-  const handleSignIn = (userToSign?: Partial<GoogleUser>) => {
+  const handleLiveSupabaseLogin = async () => {
     setLoading(true);
-    setTimeout(() => {
-      loginWithGoogle(userToSign || selectedUser);
-      setLoading(false);
-    }, 350);
+    await loginWithGoogle(); // Triggers real Supabase Google OAuth redirect
+    setLoading(false);
+  };
+
+  const handleSignIn = async (userToSign?: Partial<GoogleUser>) => {
+    setLoading(true);
+    await loginWithGoogle(userToSign || selectedUser);
+    setLoading(false);
   };
 
   const handleCustomSubmit = (e: React.FormEvent) => {
@@ -76,7 +81,7 @@ export function GoogleAuthModal() {
           <X className="size-4" />
         </button>
 
-        {/* Clean Google Header */}
+        {/* Header */}
         <div className="flex flex-col items-center text-center">
           <div className="flex size-12 items-center justify-center rounded-full border border-border bg-background shadow-xs">
             <GoogleLogo className="size-6" />
@@ -85,12 +90,51 @@ export function GoogleAuthModal() {
             Sign in with Google
           </h2>
           <p className="mt-1 text-xs text-muted-foreground max-w-xs">
-            Choose an account to continue to EventRoute
+            Connect your student account to EventRoute
           </p>
+
+          {/* Supabase Status Pill */}
+          <div className="mt-2.5">
+            {isSupabaseConfigured ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-medium text-emerald-400">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Live Supabase Auth Connected
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-[10px] text-muted-foreground">
+                <Key className="size-3" />
+                Supabase ready (add keys to .env)
+              </span>
+            )}
+          </div>
         </div>
 
+        {/* Live Supabase OAuth Button if configured */}
+        {isSupabaseConfigured && (
+          <div className="mt-4 pt-2">
+            <button
+              onClick={handleLiveSupabaseLogin}
+              disabled={loading}
+              className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-primary py-2.5 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50"
+            >
+              <GoogleLogo className="size-4" />
+              <span>Continue with Google (Live Supabase OAuth)</span>
+              <ArrowRight className="size-3.5" />
+            </button>
+
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border/80" />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or use test account</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tabs */}
-        <div className="mt-5 grid grid-cols-2 rounded-lg bg-muted/60 p-1 text-xs font-medium">
+        <div className={`mt-4 grid grid-cols-2 rounded-lg bg-muted/60 p-1 text-xs font-medium`}>
           <button
             type="button"
             onClick={() => setActiveTab("choose")}
@@ -232,7 +276,11 @@ export function GoogleAuthModal() {
 
         <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
           <Shield className="size-3 text-muted-foreground" />
-          <span>Uses simulated Google OAuth for local state demo</span>
+          <span>
+            {isSupabaseConfigured
+              ? "Live Supabase OAuth configured"
+              : "To connect real Google OAuth, set VITE_SUPABASE_URL in .env"}
+          </span>
         </div>
       </div>
     </div>
