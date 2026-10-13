@@ -10,9 +10,9 @@ import { GoogleLogo } from "@/components/GoogleAuthModal";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — EventRoute" },
+      { title: "Dashboard — AvsarMarg" },
       { name: "description", content: "Your upcoming events, deadlines, priorities and schedule conflicts in one place." },
-      { property: "og:title", content: "EventRoute Dashboard" },
+      { property: "og:title", content: "AvsarMarg Dashboard" },
       { property: "og:description", content: "Inter-college opportunities, prioritized for you." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

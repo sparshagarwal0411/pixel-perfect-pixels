@@ -10,7 +10,7 @@ import { AuthGate } from "@/components/AuthGate";
 export const Route = createFileRoute("/calendar")({
   head: () => ({
     meta: [
-      { title: "Calendar & tracker — EventRoute" },
+      { title: "Calendar & tracker — AvsarMarg" },
       { name: "description", content: "Your event calendar, registration statuses, deadlines and reminders." },
       { property: "og:title", content: "Event calendar & registration tracker" },
       { property: "og:description", content: "Track every registration and deadline." },

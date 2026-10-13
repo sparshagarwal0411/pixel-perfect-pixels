@@ -93,7 +93,7 @@ interface Ctx extends State {
 }
 
 const StoreCtx = createContext<Ctx | null>(null);
-const KEY = "eventroute:v2";
+const KEY = "AvsarMarg:v2";
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(initial);

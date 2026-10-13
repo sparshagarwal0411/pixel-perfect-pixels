@@ -24,7 +24,7 @@ import { MouseGridHero } from "@/components/MouseGridHero";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "EventRoute — Delhi-NCR College Hackathons, Fests & Competitions" },
+      { title: "AvsarMarg — Delhi-NCR College Hackathons, Fests & Competitions" },
       {
         name: "description",
         content:
@@ -64,7 +64,7 @@ export function LandingPage() {
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            Why students use EventRoute
+            Why students use AvsarMarg
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             No more registering for events that clash with exams or require 3 hours in cabs for a ₹5k prize pool.
@@ -357,7 +357,7 @@ export function LandingPage() {
 
       {/* FOOTER */}
       <footer className="pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-        <span>© 2026 EventRoute · Delhi-NCR Inter-College Circuit</span>
+        <span>© 2026 AvsarMarg · Delhi-NCR Inter-College Circuit</span>
         <div className="flex gap-4">
           <Link to="/explore" className="hover:text-foreground">Explore</Link>
           <Link to="/nearby" className="hover:text-foreground">Nearby</Link>

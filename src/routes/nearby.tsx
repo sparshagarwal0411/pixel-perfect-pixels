@@ -11,7 +11,7 @@ import { RealTransitMap } from "@/components/RealTransitMap";
 export const Route = createFileRoute("/nearby")({
   head: () => ({
     meta: [
-      { title: "Transit Radar & Map — EventRoute" },
+      { title: "Transit Radar & Map — AvsarMarg" },
       {
         name: "description",
         content:

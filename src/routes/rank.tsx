@@ -8,7 +8,7 @@ import { AuthGate } from "@/components/AuthGate";
 export const Route = createFileRoute("/rank")({
   head: () => ({
     meta: [
-      { title: "EventRank — EventRoute" },
+      { title: "EventRank — AvsarMarg" },
       { name: "description", content: "Transparent Worth-It Scores built from quality, cost, travel, relevance and community feedback." },
       { property: "og:title", content: "EventRank: transparent Worth-It Scores" },
       { property: "og:description", content: "See exactly why an event is worth your time." },

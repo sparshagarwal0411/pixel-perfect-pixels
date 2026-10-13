@@ -10,7 +10,7 @@ import { AuthGate } from "@/components/AuthGate";
 export const Route = createFileRoute("/campus")({
   head: () => ({
     meta: [
-      { title: "CampusConnect — EventRoute" },
+      { title: "CampusConnect — AvsarMarg" },
       { name: "description", content: "College societies discover each other and find partners for hackathons, sponsorships, design and tech." },
       { property: "og:title", content: "CampusConnect for college societies" },
       { property: "og:description", content: "Find collaborators across campuses." },
