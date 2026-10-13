@@ -23,7 +23,8 @@ export const PRESET_GOOGLE_USERS: GoogleUser[] = [
     id: "usr_sparsh",
     name: "Sparsh Agarwal",
     email: "sparsh.agarwal@dtu.ac.in",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
     collegeId: "dtu",
     collegeName: "Delhi Technological University",
     department: "Computer Engineering '26",
@@ -34,7 +35,8 @@ export const PRESET_GOOGLE_USERS: GoogleUser[] = [
     id: "usr_alex",
     name: "Alex Chen",
     email: "alex.chen@iitd.ac.in",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
     collegeId: "iitd",
     collegeName: "IIT Delhi",
     department: "Computer Science & AI",
@@ -45,7 +47,8 @@ export const PRESET_GOOGLE_USERS: GoogleUser[] = [
     id: "usr_priya",
     name: "Priya Sharma",
     email: "priya.sharma@nsut.ac.in",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
     collegeId: "nsut",
     collegeName: "Netaji Subhas Univ of Tech",
     department: "Information Technology",
@@ -70,7 +73,13 @@ interface State {
 
 const initial: State = {
   user: null, // default to unauthenticated
-  profile: { name: "Student", collegeId: "dtu", interests: ["AI", "Web", "Design"], budget: 800, goals: "Win a hackathon this semester" },
+  profile: {
+    name: "Student",
+    collegeId: "dtu",
+    interests: ["AI", "Web", "Design"],
+    budget: 800,
+    goals: "Win a hackathon this semester",
+  },
   saved: ["e1", "e5"],
   statuses: { e1: "Registered" },
   reminders: ["e1"],
@@ -136,10 +145,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             user: liveUser,
             profile: { ...s.profile, name: liveUser.name },
           }));
+          void syncRemoteUserData(liveUser);
         }
+        setLoaded(true);
       });
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
         if (session?.user) {
           const u = session.user;
           const meta = u.user_metadata || {};
@@ -159,6 +172,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             user: liveUser,
             profile: { ...s.profile, name: liveUser.name },
           }));
+          void syncRemoteUserData(liveUser);
         } else if (_event === "SIGNED_OUT") {
           setState((s) => ({
             ...s,
@@ -186,6 +200,65 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const set = (fn: (s: State) => State) => setState(fn);
 
+  const syncRemoteUserData = async (user: GoogleUser) => {
+    if (!supabase || !isSupabaseConfigured || !user.id || user.id.startsWith("usr_")) return;
+
+    const [profileResult, trackingResult] = await Promise.all([
+      supabase.from("profiles").upsert({
+        id: user.id,
+        email: user.email,
+        full_name: user.name,
+        avatar_url: user.avatar,
+        college_id: user.collegeId,
+        department: user.department,
+        updated_at: new Date().toISOString(),
+      }),
+      supabase.from("event_tracking").select("event_id,status").eq("user_id", user.id),
+    ]);
+
+    if (profileResult.error) {
+      console.error("Could not sync profile:", profileResult.error.message);
+    }
+    if (trackingResult.error) {
+      console.error("Could not load event tracking:", trackingResult.error.message);
+      return;
+    }
+
+    const remoteStatuses = Object.fromEntries(
+      (trackingResult.data ?? []).map((row) => [row.event_id, row.status as Status]),
+    );
+    setState((s) => ({ ...s, statuses: remoteStatuses }));
+  };
+
+  const syncEventStatus = async (eventId: string, status: Status | null) => {
+    const currentUser = state.user;
+    if (!supabase || !isSupabaseConfigured || !currentUser || currentUser.id.startsWith("usr_"))
+      return;
+
+    const query = status
+      ? supabase.from("event_tracking").upsert(
+          {
+            user_id: currentUser.id,
+            event_id: eventId,
+            status,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id,event_id" },
+        )
+      : supabase
+          .from("event_tracking")
+          .delete()
+          .eq("user_id", currentUser.id)
+          .eq("event_id", eventId);
+    const { error } = await query;
+    if (error) {
+      console.error("Could not save event status:", error.message);
+      toast.error("Couldn't save event status", {
+        description: "Your local status is still shown.",
+      });
+    }
+  };
+
   const loginWithGoogle = async (customUser?: Partial<GoogleUser>) => {
     // If real Supabase is configured and not choosing a manual demo user:
     if (supabase && isSupabaseConfigured && !customUser?.id) {
@@ -211,7 +284,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       ? {
           id: customUser.id || `usr_${Date.now()}`,
           name: customUser.name,
-          email: customUser.email || `${customUser.name.toLowerCase().replace(/\s+/g, ".")}@student.edu`,
+          email:
+            customUser.email || `${customUser.name.toLowerCase().replace(/\s+/g, ".")}@student.edu`,
           avatar: customUser.avatar || PRESET_GOOGLE_USERS[0].avatar,
           collegeId: customUser.collegeId || "dtu",
           collegeName: customUser.collegeName || "Delhi Technological University",
@@ -265,16 +339,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     ...state,
     set,
     toggleSave: (id) =>
-      set((s) => ({ ...s, saved: s.saved.includes(id) ? s.saved.filter((x) => x !== id) : [...s.saved, id] })),
+      set((s) => ({
+        ...s,
+        saved: s.saved.includes(id) ? s.saved.filter((x) => x !== id) : [...s.saved, id],
+      })),
     setStatus: (id, st) =>
       set((s) => {
         const statuses = { ...s.statuses };
         if (st) statuses[id] = st;
         else delete statuses[id];
+        void syncEventStatus(id, st);
         return { ...s, statuses };
       }),
     toggleReminder: (id) =>
-      set((s) => ({ ...s, reminders: s.reminders.includes(id) ? s.reminders.filter((x) => x !== id) : [...s.reminders, id] })),
+      set((s) => ({
+        ...s,
+        reminders: s.reminders.includes(id)
+          ? s.reminders.filter((x) => x !== id)
+          : [...s.reminders, id],
+      })),
     loginWithGoogle,
     logout,
     setAuthModalOpen,

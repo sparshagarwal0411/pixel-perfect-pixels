@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LocateFixed, MapPin } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { colleges, collegeById, events, type Category } from "@/lib/data";
+import { collegeById, events as demoEvents, type Category, type EventItem } from "@/lib/data";
 import { formatDistance, fmtDate, haversineKm, travelEstimate } from "@/lib/logic";
+import { loadEvents } from "@/lib/remote-events";
 import { useStore } from "@/lib/store";
 import { Chip, DemoNote, PageHeader } from "@/components/AppShell";
 import { CanIMakeIt } from "@/components/CanIMakeIt";
@@ -42,13 +43,28 @@ function NearbyRouteComponent() {
 }
 
 function Nearby() {
-  const { profile, set } = useStore();
-  const [sel, setSel] = useState<string>(events[0].id);
+  const { profile } = useStore();
+  const [events, setEvents] = useState<EventItem[]>(demoEvents);
+  const [sel, setSel] = useState<string>(demoEvents[0].id);
   const [cat, setCat] = useState<Category | "All">("All");
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationStatus, setLocationStatus] = useState<"loading" | "ready" | "denied">("loading");
 
   const home = collegeById(profile.collegeId);
+  useEffect(() => {
+    let active = true;
+    loadEvents().then((loaded) => {
+      if (!active) return;
+      setEvents(loaded);
+      if (loaded[0])
+        setSel((current) =>
+          loaded.some((event) => event.id === current) ? current : loaded[0].id,
+        );
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
   useEffect(() => {
     if (!navigator.geolocation) {
       setLocationStatus("denied");
@@ -75,7 +91,7 @@ function Nearby() {
           const bCollege = collegeById(b.collegeId);
           return haversineKm(origin, aCollege) - haversineKm(origin, bCollege);
         }),
-    [cat, origin],
+    [cat, events, origin],
   );
 
   const selected = events.find((e) => e.id === sel) || evs[0] || events[0];
@@ -129,11 +145,9 @@ function Nearby() {
             homeCollege={home}
             selectedEvent={selected}
             destinationCollege={destCollege}
-            allColleges={colleges}
+            events={evs}
             currentLocation={currentLocation ?? undefined}
-            onSelectCollege={(cId) =>
-              set((s) => ({ ...s, profile: { ...s.profile, collegeId: cId } }))
-            }
+            onSelectEvent={setSel}
           />
         </div>
 

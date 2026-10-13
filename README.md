@@ -22,3 +22,20 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Syncing public Unstop events
+
+1. Run `supabase/events.sql` in the Supabase SQL editor.
+2. Install the scraper dependencies with `python -m pip install -r requirements.txt`.
+3. Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the shell running the sync job.
+4. Run `python scripts/sync_unstop_events.py`.
+
+The same migration creates `profiles` and `event_tracking`. Supabase OAuth users
+are linked through `auth.users.id`; event tracking is protected by row-level
+security, so each user can read and update only their own statuses. `Registered`
+means the user marked the event in AvsarMarg—it does not claim that Unstop
+registration was completed.
+
+The sync reads public listing HTML only, publishes only events whose Delhi campus
+can be matched to a known map location, and uses a service-role key only on the
+server. Never put `SUPABASE_SERVICE_ROLE_KEY` in `VITE_*` variables or the browser.

@@ -14,16 +14,23 @@ import {
   Maximize2,
 } from "lucide-react";
 import { type College, type EventItem, collegeById } from "@/lib/data";
-import { travelEstimate, fmtDate } from "@/lib/logic";
+import { formatDistance, fmtDate, haversineKm, travelEstimate } from "@/lib/logic";
 import { GoogleLogo } from "./GoogleAuthModal";
+
+const escapeHtml = (value: string) =>
+  value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character] ??
+      character,
+  );
 
 interface RealTransitMapProps {
   homeCollege: College;
   selectedEvent: EventItem;
   destinationCollege: College;
-  allColleges: College[];
+  events: EventItem[];
   currentLocation?: { lat: number; lng: number };
-  onSelectCollege: (collegeId: string) => void;
   onSelectEvent?: (eventId: string) => void;
 }
 
@@ -31,11 +38,11 @@ export function RealTransitMap({
   homeCollege,
   selectedEvent,
   destinationCollege,
-  allColleges,
+  events,
   currentLocation,
-  onSelectCollege,
+  onSelectEvent,
 }: RealTransitMapProps) {
-  const [mapMode, setMapMode] = useState<"google" | "interactive">("google");
+  const [mapMode, setMapMode] = useState<"google" | "interactive">("interactive");
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<L.Map | null>(null);
 
@@ -101,8 +108,14 @@ export function RealTransitMap({
       },
     ).addTo(map);
 
-    // Fit bounds so both campuses are clearly in view
-    map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+    // Fit the viewport around the user's location and every visible event.
+    const eventPoints = events.map((event) => {
+      const college = collegeById(event.collegeId);
+      return [college.lat, college.lng] as [number, number];
+    });
+    map.fitBounds(L.latLngBounds([[origin.lat, origin.lng], ...eventPoints]), {
+      padding: [40, 40],
+    });
 
     // Custom marker helper
     const createCustomIcon = (label: string, isHome: boolean, isDest: boolean) => {
@@ -136,33 +149,26 @@ export function RealTransitMap({
         .bindPopup("<strong>Your current location</strong>");
     }
 
-    // Add markers for all colleges
-    allColleges.forEach((c) => {
-      const isHome = c.id === homeCollege.id;
-      const isDest = c.id === destinationCollege.id;
-
-      const marker = L.marker([c.lat, c.lng], {
-        icon: createCustomIcon(c.short, isHome, isDest),
+    // Event markers make each opportunity discoverable directly on the map.
+    events.forEach((event) => {
+      const college = collegeById(event.collegeId);
+      const distance = haversineKm(origin, college);
+      const isSelected = event.id === selectedEvent.id;
+      const marker = L.marker([college.lat, college.lng], {
+        icon: createCustomIcon(event.title, false, isSelected),
+        zIndexOffset: isSelected ? 1000 : 0,
       }).addTo(map);
 
       marker.bindPopup(`
-        <div style="font-family: sans-serif; padding: 4px; min-width: 140px;">
-          <p style="font-weight: 700; margin: 0; font-size: 13px;">${c.name}</p>
-          <p style="color: #64748b; margin: 2px 0 6px 0; font-size: 11px;">Metro: ${c.metro || "Nearby"}</p>
-          ${
-            !isHome
-              ? `<button id="btn-set-home-${c.id}" style="background-color: #06b6d4; color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; cursor: pointer; width: 100%;">Set as origin</button>`
-              : '<span style="color: #10b981; font-weight: 600; font-size: 10px;">Your home campus</span>'
-          }
+        <div style="font-family: sans-serif; padding: 4px; min-width: 190px;">
+          <p style="font-weight: 700; margin: 0; font-size: 13px;">${escapeHtml(event.title)}</p>
+          <p style="color: #64748b; margin: 3px 0; font-size: 11px;">${escapeHtml(event.category)} · ${escapeHtml(college.short)}</p>
+          <p style="color: #0f766e; margin: 0 0 8px; font-size: 12px; font-weight: 700;">${formatDistance(distance)} from you</p>
+          <p style="color: #64748b; margin: 0; font-size: 11px;">${fmtDate(event.start)} · ${escapeHtml(event.organizer)}</p>
+          ${event.sourceUrl ? `<a href="${escapeHtml(event.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; margin-top: 8px; color: #0891b2; font-size: 11px; font-weight: 700;">Open source listing →</a>` : ""}
         </div>
       `);
-
-      marker.on("popupopen", () => {
-        const btn = document.getElementById(`btn-set-home-${c.id}`);
-        if (btn) {
-          btn.onclick = () => onSelectCollege(c.id);
-        }
-      });
+      marker.on("click", () => onSelectEvent?.(event.id));
     });
 
     return () => {
@@ -175,10 +181,11 @@ export function RealTransitMap({
     mapMode,
     homeCollege,
     destinationCollege,
-    allColleges,
+    events,
     currentLocation,
-    onSelectCollege,
+    onSelectEvent,
     origin,
+    selectedEvent.id,
   ]);
 
   return (
@@ -210,7 +217,7 @@ export function RealTransitMap({
             }`}
           >
             <Compass className="size-3.5" />
-            <span>Interactive Radar</span>
+            <span>Event Map</span>
           </button>
         </div>
 
@@ -269,8 +276,8 @@ export function RealTransitMap({
             {/* Quick helper badge */}
             <div className="pointer-events-none absolute top-3 right-3 z-10 rounded-lg border border-border/80 bg-card/90 px-2.5 py-1 text-[11px] text-muted-foreground backdrop-blur-sm shadow-xs">
               {currentLocation
-                ? "Green dot: your current location"
-                : "Click any campus pin to inspect or set origin"}
+                ? "Click an event pin to see its distance from you"
+                : "Click an event pin to see its distance from your home campus"}
             </div>
           </div>
         )}
