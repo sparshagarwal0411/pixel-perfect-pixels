@@ -22,6 +22,7 @@ interface RealTransitMapProps {
   selectedEvent: EventItem;
   destinationCollege: College;
   allColleges: College[];
+  currentLocation?: { lat: number; lng: number };
   onSelectCollege: (collegeId: string) => void;
   onSelectEvent?: (eventId: string) => void;
 }
@@ -31,6 +32,7 @@ export function RealTransitMap({
   selectedEvent,
   destinationCollege,
   allColleges,
+  currentLocation,
   onSelectCollege,
 }: RealTransitMapProps) {
   const [mapMode, setMapMode] = useState<"google" | "interactive">("google");
@@ -41,13 +43,12 @@ export function RealTransitMap({
 
   // Google Maps Directions link for opening directly in Google Maps
   const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
-    homeCollege.name + ", Delhi"
-  )}&destination=${encodeURIComponent(
-    destinationCollege.name + ", Delhi"
-  )}&travelmode=transit`;
+    homeCollege.name + ", Delhi",
+  )}&destination=${encodeURIComponent(destinationCollege.name + ", Delhi")}&travelmode=transit`;
 
   // Google Maps Embed URL (free, reliable, directly shows live route/destination on Google Maps)
-  const googleEmbedUrl = `https://maps.google.com/maps?saddr=${homeCollege.lat},${homeCollege.lng}&daddr=${destinationCollege.lat},${destinationCollege.lng}&hl=en&z=12&output=embed`;
+  const origin = currentLocation ?? homeCollege;
+  const googleEmbedUrl = `https://maps.google.com/maps?saddr=${origin.lat},${origin.lng}&daddr=${destinationCollege.lat},${destinationCollege.lng}&hl=en&z=12&output=embed`;
 
   // Initialize and update Leaflet Map when in "interactive" mode
   useEffect(() => {
@@ -55,8 +56,8 @@ export function RealTransitMap({
 
     if (!leafletMapRef.current) {
       // Calculate center between origin and destination
-      const centerLat = (homeCollege.lat + destinationCollege.lat) / 2;
-      const centerLng = (homeCollege.lng + destinationCollege.lng) / 2;
+      const centerLat = (origin.lat + destinationCollege.lat) / 2;
+      const centerLng = (origin.lng + destinationCollege.lng) / 2;
 
       const map = L.map(mapContainerRef.current, {
         center: [centerLat, centerLng],
@@ -65,13 +66,10 @@ export function RealTransitMap({
       });
 
       // CartoDB Voyager or Dark Matter tiles
-      L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-        {
-          attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-          maxZoom: 18,
-        }
-      ).addTo(map);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+        maxZoom: 18,
+      }).addTo(map);
 
       leafletMapRef.current = map;
     }
@@ -80,7 +78,11 @@ export function RealTransitMap({
 
     // Clear existing markers/layers except tile layer
     map.eachLayer((layer) => {
-      if (layer instanceof L.Marker || layer instanceof L.Polyline || layer instanceof L.CircleMarker) {
+      if (
+        layer instanceof L.Marker ||
+        layer instanceof L.Polyline ||
+        layer instanceof L.CircleMarker
+      ) {
         map.removeLayer(layer);
       }
     });
@@ -88,7 +90,7 @@ export function RealTransitMap({
     // Draw route line between home and destination
     const polyline = L.polyline(
       [
-        [homeCollege.lat, homeCollege.lng],
+        [origin.lat, origin.lng],
         [destinationCollege.lat, destinationCollege.lng],
       ],
       {
@@ -96,7 +98,7 @@ export function RealTransitMap({
         weight: 4,
         opacity: 0.85,
         dashArray: "8, 8",
-      }
+      },
     ).addTo(map);
 
     // Fit bounds so both campuses are clearly in view
@@ -107,8 +109,8 @@ export function RealTransitMap({
       const bg = isHome
         ? "background-color: #10b981; color: white;"
         : isDest
-        ? "background-color: #06b6d4; color: white;"
-        : "background-color: #1e293b; color: #cbd5e1;";
+          ? "background-color: #06b6d4; color: white;"
+          : "background-color: #1e293b; color: #cbd5e1;";
 
       return L.divIcon({
         className: "custom-college-marker",
@@ -121,6 +123,18 @@ export function RealTransitMap({
         iconSize: [0, 0],
       });
     };
+
+    if (currentLocation) {
+      L.circleMarker([currentLocation.lat, currentLocation.lng], {
+        radius: 9,
+        color: "#10b981",
+        fillColor: "#10b981",
+        fillOpacity: 1,
+        weight: 3,
+      })
+        .addTo(map)
+        .bindPopup("<strong>Your current location</strong>");
+    }
 
     // Add markers for all colleges
     allColleges.forEach((c) => {
@@ -157,7 +171,15 @@ export function RealTransitMap({
         leafletMapRef.current = null;
       }
     };
-  }, [mapMode, homeCollege, destinationCollege, allColleges, onSelectCollege]);
+  }, [
+    mapMode,
+    homeCollege,
+    destinationCollege,
+    allColleges,
+    currentLocation,
+    onSelectCollege,
+    origin,
+  ]);
 
   return (
     <div className="space-y-4">
@@ -224,7 +246,9 @@ export function RealTransitMap({
                 <span className="font-semibold text-foreground">
                   {homeCollege.short} ➔ {destinationCollege.short}
                 </span>
-                <span className="text-muted-foreground hidden sm:inline">({selectedEvent.title})</span>
+                <span className="text-muted-foreground hidden sm:inline">
+                  ({selectedEvent.title})
+                </span>
               </div>
 
               <div className="flex items-center gap-3 font-medium">
@@ -244,7 +268,9 @@ export function RealTransitMap({
 
             {/* Quick helper badge */}
             <div className="pointer-events-none absolute top-3 right-3 z-10 rounded-lg border border-border/80 bg-card/90 px-2.5 py-1 text-[11px] text-muted-foreground backdrop-blur-sm shadow-xs">
-              Click any campus pin to inspect or set origin
+              {currentLocation
+                ? "Green dot: your current location"
+                : "Click any campus pin to inspect or set origin"}
             </div>
           </div>
         )}

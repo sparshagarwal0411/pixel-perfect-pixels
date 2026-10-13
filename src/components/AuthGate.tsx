@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { Lock, ArrowRight, Eye, Check } from "lucide-react";
-import { useStore, PRESET_GOOGLE_USERS } from "@/lib/store";
+import { Lock, Eye, Check } from "lucide-react";
+import { useStore } from "@/lib/store";
 import { GoogleLogo } from "./GoogleAuthModal";
 
 interface AuthGateProps {
@@ -14,7 +14,7 @@ export function AuthGate({
   description = "Connect your student Google account to personalize travel routes from your college, track deadlines, and find teammates.",
   children,
 }: AuthGateProps) {
-  const { user, setAuthModalOpen, loginWithGoogle } = useStore();
+  const { user, setAuthModalOpen } = useStore();
   const [bypassed, setBypassed] = useState(false);
 
   // If user is authenticated or explicitly clicked temporary preview
@@ -47,32 +47,10 @@ export function AuthGate({
             Sign in to access {featureName}
           </h2>
 
-          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">
-            {description}
-          </p>
-
-          {/* Quick Account Chooser */}
-          <div className="mt-5 space-y-2 text-left">
-            <p className="text-[11px] font-medium text-muted-foreground">Quick sign-in with sample account:</p>
-            {PRESET_GOOGLE_USERS.slice(0, 2).map((u) => (
-              <button
-                key={u.id}
-                type="button"
-                onClick={() => loginWithGoogle(u)}
-                className="w-full flex items-center gap-2.5 rounded-xl border border-border/80 bg-background/70 p-2 text-xs hover:border-primary/50 hover:bg-muted/40 transition-all"
-              >
-                <img src={u.avatar} alt={u.name} className="size-7 rounded-full object-cover ring-1 ring-border" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-foreground">{u.name}</p>
-                  <p className="truncate text-[10px] text-muted-foreground">{u.email} · {u.collegeId.toUpperCase()}</p>
-                </div>
-                <ArrowRight className="size-3.5 text-muted-foreground" />
-              </button>
-            ))}
-          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed">{description}</p>
 
           {/* Main Action */}
-          <div className="mt-5 flex flex-col gap-2">
+          <div className="mt-6 flex flex-col gap-2">
             <button
               onClick={() => setAuthModalOpen(true)}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-95 active:scale-[0.99] transition-all"

@@ -10,6 +10,9 @@ export function haversineKm(a: { lat: number; lng: number }, b: { lat: number; l
   return 2 * R * Math.asin(Math.sqrt(s));
 }
 
+export const formatDistance = (km: number) =>
+  km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
+
 /** Rough estimate only — straight-line distance × 1.35 road factor, ~22 km/h city average. Not a live route. */
 export function travelEstimate(fromId: string, toId: string) {
   if (fromId === toId) return { km: 0, minutes: 5, cost: 0 };
@@ -65,7 +68,12 @@ export function priority(e: EventItem, profile: Profile, saved: boolean) {
   return { score, daysLeft, affordable };
 }
 
-export function canIMakeIt(e: EventItem, profile: Profile, committed: EventItem[], leaveHour: number) {
+export function canIMakeIt(
+  e: EventItem,
+  profile: Profile,
+  committed: EventItem[],
+  leaveHour: number,
+) {
   const t = travelEstimate(profile.collegeId, e.collegeId);
   const start = new Date(e.start);
   const arrival = new Date(start);

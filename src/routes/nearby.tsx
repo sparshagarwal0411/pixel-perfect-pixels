@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { LocateFixed, MapPin } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { colleges, collegeById, events, type Category } from "@/lib/data";
-import { fmtDate, travelEstimate } from "@/lib/logic";
+import { formatDistance, fmtDate, haversineKm, travelEstimate } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { Chip, DemoNote, PageHeader } from "@/components/AppShell";
 import { CanIMakeIt } from "@/components/CanIMakeIt";
@@ -44,15 +45,38 @@ function Nearby() {
   const { profile, set } = useStore();
   const [sel, setSel] = useState<string>(events[0].id);
   const [cat, setCat] = useState<Category | "All">("All");
+  const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationStatus, setLocationStatus] = useState<"loading" | "ready" | "denied">("loading");
 
   const home = collegeById(profile.collegeId);
-  const evs = events
-    .filter((e) => cat === "All" || e.category === cat)
-    .sort(
-      (a, b) =>
-        travelEstimate(profile.collegeId, a.collegeId).minutes -
-        travelEstimate(profile.collegeId, b.collegeId).minutes
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationStatus("denied");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setCurrentLocation({ lat: coords.latitude, lng: coords.longitude });
+        setLocationStatus("ready");
+      },
+      () => setLocationStatus("denied"),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
     );
+  }, []);
+
+  const origin = currentLocation ?? home;
+  const evs = useMemo(
+    () =>
+      events
+        .filter((e) => cat === "All" || e.category === cat)
+        .sort((a, b) => {
+          const aCollege = collegeById(a.collegeId);
+          const bCollege = collegeById(b.collegeId);
+          return haversineKm(origin, aCollege) - haversineKm(origin, bCollege);
+        }),
+    [cat, origin],
+  );
 
   const selected = events.find((e) => e.id === sel) || evs[0] || events[0];
   const destCollege = collegeById(selected.collegeId);
@@ -61,24 +85,41 @@ function Nearby() {
     <>
       <PageHeader
         title="Transit Radar & Real Map"
-        subtitle={`Live metro travel routes from ${home.name} (${home.short}) to upcoming event venues across Delhi-NCR.`}
+        subtitle={
+          locationStatus === "ready"
+            ? "Upcoming events sorted by distance from your current location."
+            : `Upcoming events sorted by distance from ${home.name} (${home.short}).`
+        }
       />
+
+      <div className="mb-4 flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-xs text-muted-foreground">
+        <LocateFixed
+          className={`size-3.5 ${locationStatus === "ready" ? "text-emerald-500" : "text-primary"}`}
+        />
+        {locationStatus === "loading"
+          ? "Finding your location…"
+          : locationStatus === "ready"
+            ? "Using your current location"
+            : "Location unavailable — showing distances from your home college"}
+      </div>
 
       {/* Category filter pills */}
       <div className="mb-4 flex flex-wrap gap-2">
-        {(["All", "Hackathon", "Workshop", "Competition", "Conference", "Fest"] as const).map((c) => (
-          <button
-            key={c}
-            onClick={() => setCat(c)}
-            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-              cat === c
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
-          >
-            {c}
-          </button>
-        ))}
+        {(["All", "Hackathon", "Workshop", "Competition", "Conference", "Fest"] as const).map(
+          (c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                cat === c
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
+              }`}
+            >
+              {c}
+            </button>
+          ),
+        )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
@@ -89,6 +130,7 @@ function Nearby() {
             selectedEvent={selected}
             destinationCollege={destCollege}
             allColleges={colleges}
+            currentLocation={currentLocation ?? undefined}
             onSelectCollege={(cId) =>
               set((s) => ({ ...s, profile: { ...s.profile, collegeId: cId } }))
             }
@@ -100,33 +142,36 @@ function Nearby() {
           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-foreground">Select Venue / Event</span>
-              <span className="text-[11px] text-muted-foreground">Sorted by travel time</span>
+              <span className="text-[11px] text-muted-foreground">Sorted by distance</span>
             </div>
 
             <div className="max-h-80 divide-y divide-border/60 overflow-y-auto rounded-xl border border-border/80">
               {evs.map((e) => {
                 const t = travelEstimate(profile.collegeId, e.collegeId);
+                const distance = haversineKm(origin, collegeById(e.collegeId));
                 const isSelected = sel === e.id;
                 return (
                   <button
                     key={e.id}
                     onClick={() => setSel(e.id)}
                     className={`flex w-full items-center justify-between gap-2 p-3 text-left text-xs transition-colors ${
-                      isSelected
-                        ? "bg-primary/10 border-l-2 border-primary"
-                        : "hover:bg-muted/50"
+                      isSelected ? "bg-primary/10 border-l-2 border-primary" : "hover:bg-muted/50"
                     }`}
                   >
                     <div className="min-w-0 flex-1">
-                      <p className={`truncate font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}>
+                      <p
+                        className={`truncate font-semibold ${isSelected ? "text-primary" : "text-foreground"}`}
+                      >
                         {e.title}
                       </p>
                       <p className="text-[11px] text-muted-foreground">
-                        {collegeById(e.collegeId).short} · {fmtDate(e.start)}
+                        <MapPin className="mr-0.5 inline size-3" />
+                        {collegeById(e.collegeId).short} · {fmtDate(e.start)} ·{" "}
+                        {formatDistance(distance)}
                       </p>
                     </div>
-                    <Chip tone={t.minutes <= 35 ? "success" : t.minutes <= 60 ? "default" : "warning"}>
-                      {t.minutes}m · ₹{t.cost}
+                    <Chip tone={distance <= 5 ? "success" : distance <= 15 ? "default" : "warning"}>
+                      {formatDistance(distance)}
                     </Chip>
                   </button>
                 );
