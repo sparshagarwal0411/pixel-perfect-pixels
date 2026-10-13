@@ -1,0 +1,47 @@
+import { Link } from "@tanstack/react-router";
+import { Bookmark, MapPin, Star } from "lucide-react";
+import { collegeById, type EventItem } from "@/lib/data";
+import { avgRating, fmtDate, fmtMoney, worthIt } from "@/lib/logic";
+import { useStore } from "@/lib/store";
+import { Chip, ScoreRing } from "./AppShell";
+
+export function EventCard({ e, compareSelected, onCompare }: { e: EventItem; compareSelected?: boolean; onCompare?: () => void }) {
+  const { saved, toggleSave, profile, userReviews, statuses } = useStore();
+  const w = worthIt(e, profile, userReviews[e.id]);
+  const avg = avgRating([...e.reviews, ...(userReviews[e.id] ?? [])]);
+  const isSaved = saved.includes(e.id);
+  return (
+    <div className="group card-surface flex flex-col p-4 transition-transform hover:-translate-y-0.5 fade-up">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            <Chip tone="primary">{e.category}</Chip>
+            {statuses[e.id] && <Chip tone="success">{statuses[e.id]}</Chip>}
+          </div>
+          <Link to="/events/$id" params={{ id: e.id }} className="block truncate font-medium hover:text-primary">{e.title}</Link>
+          <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="size-3" /> {collegeById(e.collegeId).short} · {e.organizer}
+          </p>
+        </div>
+        <ScoreRing score={w.score} />
+      </div>
+      <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+        <div><p className="text-muted-foreground">Date</p><p className="font-medium">{fmtDate(e.start)}</p></div>
+        <div><p className="text-muted-foreground">Fee</p><p className="font-medium">{fmtMoney(e.fee)}</p></div>
+        <div><p className="text-muted-foreground">Rating</p><p className="flex items-center gap-1 font-medium">{avg ? <><Star className="size-3 fill-warning text-warning" />{avg.toFixed(1)} <span className="text-muted-foreground">({w.reviewCount})</span></> : <span className="text-muted-foreground">No reviews</span>}</p></div>
+      </div>
+      <p className="mt-3 line-clamp-1 text-xs text-muted-foreground">{e.eligibility}</p>
+      <div className="mt-4 flex items-center gap-2 border-t pt-3">
+        <button onClick={() => toggleSave(e.id)} className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs ${isSaved ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+          <Bookmark className={`size-3.5 ${isSaved ? "fill-current" : ""}`} /> {isSaved ? "Saved" : "Save"}
+        </button>
+        {onCompare && (
+          <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted-foreground">
+            <input type="checkbox" checked={!!compareSelected} onChange={onCompare} className="accent-primary" /> Compare
+          </label>
+        )}
+        <Link to="/events/$id" params={{ id: e.id }} className="ml-auto text-xs font-medium text-primary">Details →</Link>
+      </div>
+    </div>
+  );
+}
