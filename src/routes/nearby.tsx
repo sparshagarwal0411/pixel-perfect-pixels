@@ -7,8 +7,9 @@ import { loadEvents } from "@/lib/remote-events";
 import { useStore } from "@/lib/store";
 import { Chip, DemoNote, PageHeader } from "@/components/AppShell";
 import { CanIMakeIt } from "@/components/CanIMakeIt";
-import { AuthGate } from "@/components/AuthGate";
 import { RealTransitMap } from "@/components/RealTransitMap";
+
+const DELHI_CENTER = { lat: 28.6139, lng: 77.209 };
 
 export const Route = createFileRoute("/nearby")({
   head: () => ({
@@ -32,14 +33,7 @@ export const Route = createFileRoute("/nearby")({
 });
 
 function NearbyRouteComponent() {
-  return (
-    <AuthGate
-      featureName="Transit Radar & Real Map"
-      description="Connect your student Google account to calculate live metro transit routes, station transfer gates, and 'Can I Make It' commute checks."
-    >
-      <Nearby />
-    </AuthGate>
-  );
+  return <Nearby />;
 }
 
 function Nearby() {
@@ -81,7 +75,7 @@ function Nearby() {
     );
   }, []);
 
-  const origin = currentLocation ?? home;
+  const origin = currentLocation ?? DELHI_CENTER;
   const evs = useMemo(
     () =>
       events
@@ -104,7 +98,7 @@ function Nearby() {
         subtitle={
           locationStatus === "ready"
             ? "Upcoming events sorted by distance from your current location."
-            : `Upcoming events sorted by distance from ${home.name} (${home.short}).`
+            : "Upcoming events sorted by distance from central Delhi."
         }
       />
 
@@ -116,7 +110,7 @@ function Nearby() {
           ? "Finding your location…"
           : locationStatus === "ready"
             ? "Using your current location"
-            : "Location unavailable — showing distances from your home college"}
+            : "Location unavailable — showing distances from central Delhi"}
       </div>
 
       {/* Category filter pills */}
@@ -147,6 +141,8 @@ function Nearby() {
             destinationCollege={destCollege}
             events={evs}
             currentLocation={currentLocation ?? undefined}
+            mapOrigin={origin}
+            distanceOriginLabel={locationStatus === "ready" ? "you" : "central Delhi"}
             onSelectEvent={setSel}
           />
         </div>

@@ -30,6 +30,8 @@ interface RealTransitMapProps {
   selectedEvent: EventItem;
   destinationCollege: College;
   events: EventItem[];
+  mapOrigin: { lat: number; lng: number };
+  distanceOriginLabel: "you" | "central Delhi";
   currentLocation?: { lat: number; lng: number };
   onSelectEvent?: (eventId: string) => void;
 }
@@ -39,6 +41,8 @@ export function RealTransitMap({
   selectedEvent,
   destinationCollege,
   events,
+  mapOrigin,
+  distanceOriginLabel,
   currentLocation,
   onSelectEvent,
 }: RealTransitMapProps) {
@@ -47,14 +51,14 @@ export function RealTransitMap({
   const leafletMapRef = useRef<L.Map | null>(null);
 
   const travel = travelEstimate(homeCollege.id, destinationCollege.id);
+  const origin = mapOrigin;
 
   // Google Maps Directions link for opening directly in Google Maps
   const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
-    homeCollege.name + ", Delhi",
+    `${origin.lat},${origin.lng}`,
   )}&destination=${encodeURIComponent(destinationCollege.name + ", Delhi")}&travelmode=transit`;
 
   // Google Maps Embed URL (free, reliable, directly shows live route/destination on Google Maps)
-  const origin = currentLocation ?? homeCollege;
   const googleEmbedUrl = `https://maps.google.com/maps?saddr=${origin.lat},${origin.lng}&daddr=${destinationCollege.lat},${destinationCollege.lng}&hl=en&z=12&output=embed`;
 
   // Initialize and update Leaflet Map when in "interactive" mode
@@ -147,6 +151,18 @@ export function RealTransitMap({
       })
         .addTo(map)
         .bindPopup("<strong>Your current location</strong>");
+    } else {
+      L.circleMarker([origin.lat, origin.lng], {
+        radius: 8,
+        color: "#f59e0b",
+        fillColor: "#f59e0b",
+        fillOpacity: 1,
+        weight: 3,
+      })
+        .addTo(map)
+        .bindPopup(
+          "<strong>Central Delhi</strong><br />Enable location access to measure from your exact position.",
+        );
     }
 
     // Event markers make each opportunity discoverable directly on the map.
@@ -163,7 +179,7 @@ export function RealTransitMap({
         <div style="font-family: sans-serif; padding: 4px; min-width: 190px;">
           <p style="font-weight: 700; margin: 0; font-size: 13px;">${escapeHtml(event.title)}</p>
           <p style="color: #64748b; margin: 3px 0; font-size: 11px;">${escapeHtml(event.category)} · ${escapeHtml(college.short)}</p>
-          <p style="color: #0f766e; margin: 0 0 8px; font-size: 12px; font-weight: 700;">${formatDistance(distance)} from you</p>
+          <p style="color: #0f766e; margin: 0 0 8px; font-size: 12px; font-weight: 700;">${formatDistance(distance)} from ${distanceOriginLabel}</p>
           <p style="color: #64748b; margin: 0; font-size: 11px;">${fmtDate(event.start)} · ${escapeHtml(event.organizer)}</p>
           ${event.sourceUrl ? `<a href="${escapeHtml(event.sourceUrl)}" target="_blank" rel="noopener noreferrer" style="display: inline-block; margin-top: 8px; color: #0891b2; font-size: 11px; font-weight: 700;">Open source listing →</a>` : ""}
         </div>
@@ -182,6 +198,8 @@ export function RealTransitMap({
     homeCollege,
     destinationCollege,
     events,
+    mapOrigin,
+    distanceOriginLabel,
     currentLocation,
     onSelectEvent,
     origin,
@@ -277,7 +295,7 @@ export function RealTransitMap({
             <div className="pointer-events-none absolute top-3 right-3 z-10 rounded-lg border border-border/80 bg-card/90 px-2.5 py-1 text-[11px] text-muted-foreground backdrop-blur-sm shadow-xs">
               {currentLocation
                 ? "Click an event pin to see its distance from you"
-                : "Click an event pin to see its distance from your home campus"}
+                : "Click an event pin to see its distance from central Delhi"}
             </div>
           </div>
         )}
