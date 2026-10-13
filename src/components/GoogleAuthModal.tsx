@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Check, ShieldCheck, ArrowRight, UserPlus, Sparkles } from "lucide-react";
+import { X, Check, ArrowRight, UserPlus, Shield } from "lucide-react";
 import { useStore, PRESET_GOOGLE_USERS, type GoogleUser } from "@/lib/store";
 import { colleges } from "@/lib/data";
 
@@ -28,21 +28,21 @@ export function GoogleLogo({ className = "size-5" }: { className?: string }) {
 
 export function GoogleAuthModal() {
   const { authModalOpen, setAuthModalOpen, loginWithGoogle } = useStore();
-  const [activeTab, setActiveTab] = useState<"preset" | "custom">("preset");
+  const [activeTab, setActiveTab] = useState<"choose" | "custom">("choose");
   const [customName, setCustomName] = useState("");
   const [customEmail, setCustomEmail] = useState("");
   const [customCollege, setCustomCollege] = useState("dtu");
   const [selectedUser, setSelectedUser] = useState<GoogleUser>(PRESET_GOOGLE_USERS[0]);
-  const [signingIn, setSigningIn] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   if (!authModalOpen) return null;
 
   const handleSignIn = (userToSign?: Partial<GoogleUser>) => {
-    setSigningIn(true);
+    setLoading(true);
     setTimeout(() => {
       loginWithGoogle(userToSign || selectedUser);
-      setSigningIn(false);
-    }, 400);
+      setLoading(false);
+    }, 350);
   };
 
   const handleCustomSubmit = (e: React.FormEvent) => {
@@ -54,72 +54,69 @@ export function GoogleAuthModal() {
       email: customEmail.trim() || `${customName.toLowerCase().replace(/\s+/g, ".")}@${customCollege}.ac.in`,
       collegeId: customCollege,
       collegeName: clg?.name || "College",
-      role: "Student Hacker",
+      role: "Student",
     });
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* Dimmed backdrop */}
       <div
-        className="absolute inset-0 bg-background/80 backdrop-blur-md transition-opacity"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={() => setAuthModalOpen(false)}
       />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border/80 bg-card p-6 shadow-2xl shadow-primary/10 fade-up">
-        {/* Close Button */}
+      <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-2xl fade-up">
         <button
           onClick={() => setAuthModalOpen(false)}
-          className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-          aria-label="Close dialog"
+          className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          aria-label="Close"
         >
           <X className="size-4" />
         </button>
 
-        {/* Google Branding Header */}
+        {/* Clean Google Header */}
         <div className="flex flex-col items-center text-center">
-          <div className="flex size-14 items-center justify-center rounded-2xl border border-border/80 bg-background shadow-sm">
-            <GoogleLogo className="size-7" />
+          <div className="flex size-12 items-center justify-center rounded-full border border-border bg-background shadow-xs">
+            <GoogleLogo className="size-6" />
           </div>
-          <h2 className="mt-3.5 text-xl font-bold tracking-tight text-foreground">Sign in with Google</h2>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Connect your verified student credentials to unlock the full EventRoute intelligence mesh.
+          <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">
+            Sign in with Google
+          </h2>
+          <p className="mt-1 text-xs text-muted-foreground max-w-xs">
+            Choose an account to continue to EventRoute
           </p>
         </div>
 
-        {/* Tab switcher */}
-        <div className="mt-5 grid grid-cols-2 rounded-lg border border-border/60 bg-muted/40 p-1 text-xs font-medium">
+        {/* Tabs */}
+        <div className="mt-5 grid grid-cols-2 rounded-lg bg-muted/60 p-1 text-xs font-medium">
           <button
             type="button"
-            onClick={() => setActiveTab("preset")}
+            onClick={() => setActiveTab("choose")}
             className={`rounded-md py-1.5 transition-all ${
-              activeTab === "preset"
-                ? "bg-background text-foreground shadow-sm"
+              activeTab === "choose"
+                ? "bg-background text-foreground shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Quick Select
+            Saved accounts
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("custom")}
             className={`rounded-md py-1.5 transition-all ${
               activeTab === "custom"
-                ? "bg-background text-foreground shadow-sm"
+                ? "bg-background text-foreground shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Custom Profile
+            Custom account
           </button>
         </div>
 
-        {/* Content based on tab */}
-        {activeTab === "preset" ? (
+        {activeTab === "choose" ? (
           <div className="mt-4 space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/80">
-              Select verified account
-            </p>
             {PRESET_GOOGLE_USERS.map((u) => {
               const isSelected = selectedUser.id === u.id;
               return (
@@ -128,15 +125,15 @@ export function GoogleAuthModal() {
                   onClick={() => setSelectedUser(u)}
                   className={`group flex cursor-pointer items-center gap-3 rounded-xl border p-2.5 transition-all ${
                     isSelected
-                      ? "border-primary/60 bg-primary/10 shadow-sm"
-                      : "border-border/60 bg-background/50 hover:border-border hover:bg-muted/30"
+                      ? "border-primary/60 bg-primary/5"
+                      : "border-border/60 bg-background/50 hover:bg-muted/40"
                   }`}
                 >
                   <div className="relative">
                     <img
                       src={u.avatar}
                       alt={u.name}
-                      className="size-10 rounded-full object-cover ring-1 ring-border"
+                      className="size-9 rounded-full object-cover ring-1 ring-border"
                     />
                     <div className="absolute -bottom-0.5 -right-0.5 grid size-3.5 place-items-center rounded-full bg-background shadow-xs">
                       <GoogleLogo className="size-2.5" />
@@ -145,22 +142,21 @@ export function GoogleAuthModal() {
 
                   <div className="min-w-0 flex-1 text-left">
                     <div className="flex items-center gap-1.5">
-                      <p className="truncate text-sm font-semibold text-foreground">{u.name}</p>
-                      <span className="rounded bg-primary/20 px-1 py-0.2 text-[10px] font-medium text-primary">
+                      <p className="truncate text-xs font-semibold text-foreground">{u.name}</p>
+                      <span className="rounded bg-muted px-1.5 py-0.2 text-[10px] text-muted-foreground">
                         {u.collegeId.toUpperCase()}
                       </span>
                     </div>
-                    <p className="truncate text-xs text-muted-foreground">{u.email}</p>
-                    <p className="text-[10px] text-muted-foreground/80">{u.department}</p>
+                    <p className="truncate text-[11px] text-muted-foreground">{u.email}</p>
                   </div>
 
                   <div className="shrink-0">
                     {isSelected ? (
-                      <div className="grid size-5 place-items-center rounded-full bg-primary text-primary-foreground">
-                        <Check className="size-3 stroke-[3]" />
+                      <div className="grid size-4.5 place-items-center rounded-full bg-primary text-primary-foreground">
+                        <Check className="size-3 stroke-[2.5]" />
                       </div>
                     ) : (
-                      <div className="size-5 rounded-full border border-border" />
+                      <div className="size-4.5 rounded-full border border-border" />
                     )}
                   </div>
                 </div>
@@ -169,16 +165,16 @@ export function GoogleAuthModal() {
 
             <button
               onClick={() => handleSignIn(selectedUser)}
-              disabled={signingIn}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:opacity-95 active:scale-[0.99] disabled:opacity-50"
+              disabled={loading}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50"
             >
-              {signingIn ? (
+              {loading ? (
                 <span className="inline-block size-4 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
               ) : (
                 <>
-                  <GoogleLogo className="size-4" />
+                  <GoogleLogo className="size-3.5" />
                   Continue as {selectedUser.name.split(" ")[0]}
-                  <ArrowRight className="size-4" />
+                  <ArrowRight className="size-3.5" />
                 </>
               )}
             </button>
@@ -193,16 +189,16 @@ export function GoogleAuthModal() {
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
                 placeholder="e.g. Sparsh Agarwal"
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
 
             <div>
-              <label className="text-xs font-medium text-foreground">College / University</label>
+              <label className="text-xs font-medium text-foreground">Your College</label>
               <select
                 value={customCollege}
                 onChange={(e) => setCustomCollege(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-primary/40"
               >
                 {colleges.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -213,33 +209,30 @@ export function GoogleAuthModal() {
             </div>
 
             <div>
-              <label className="text-xs font-medium text-foreground">College Email (Optional)</label>
+              <label className="text-xs font-medium text-foreground">College Email</label>
               <input
                 type="email"
                 value={customEmail}
                 onChange={(e) => setCustomEmail(e.target.value)}
-                placeholder="name@college.edu.in"
-                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                placeholder="you@college.edu.in"
+                className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
 
             <button
               type="submit"
-              disabled={signingIn || !customName.trim()}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:opacity-95 active:scale-[0.99] disabled:opacity-50"
+              disabled={loading || !customName.trim()}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-2.5 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-95 active:scale-[0.99] transition-all disabled:opacity-50"
             >
-              <UserPlus className="size-4" />
-              Sign In with Custom Google Identity
+              <UserPlus className="size-3.5" />
+              Continue with this account
             </button>
           </form>
         )}
 
-        {/* Security footer disclaimer */}
-        <div className="mt-5 border-t border-border/60 pt-3">
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-            <ShieldCheck className="size-3.5 text-emerald-500" />
-            <span>256-bit Student OAuth Simulation · Instant Access Unlocked</span>
-          </div>
+        <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+          <Shield className="size-3 text-muted-foreground" />
+          <span>Uses simulated Google OAuth for local state demo</span>
         </div>
       </div>
     </div>

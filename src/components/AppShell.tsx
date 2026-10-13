@@ -15,10 +15,6 @@ import {
   Home,
   CheckCircle2,
   Sliders,
-  Terminal,
-  Activity,
-  Layers,
-  Sparkles,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore } from "@/lib/store";
@@ -26,13 +22,13 @@ import { colleges } from "@/lib/data";
 import { GoogleLogo } from "./GoogleAuthModal";
 
 export const navItems = [
-  { to: "/", label: "Overview & Features", icon: Home, isProtected: false },
+  { to: "/", label: "Overview", icon: Home, isProtected: false },
   { to: "/dashboard", label: "My Dashboard", icon: LayoutDashboard, isProtected: true },
   { to: "/explore", label: "Explore Events", icon: Compass, isProtected: false },
-  { to: "/nearby", label: "Nearby Radar", icon: MapPinned, isProtected: true },
-  { to: "/calendar", label: "Calendar & Sync", icon: CalendarDays, isProtected: true },
-  { to: "/rank", label: "EventRank AI", icon: Trophy, isProtected: true },
-  { to: "/campus", label: "CampusConnect", icon: Network, isProtected: true },
+  { to: "/nearby", label: "Transit Radar", icon: MapPinned, isProtected: true },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays, isProtected: true },
+  { to: "/rank", label: "Worth-It Rankings", icon: Trophy, isProtected: true },
+  { to: "/campus", label: "Campus Collab", icon: Network, isProtected: true },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -49,24 +45,20 @@ export function AppShell({ children }: { children: ReactNode }) {
           className="flex items-center gap-2.5 px-1 group"
           onClick={() => setOpen(false)}
         >
-          <div className="relative grid size-8.5 place-items-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/30 transition-transform group-hover:scale-105">
-            <Compass className="size-5" />
-            <span className="absolute -top-1 -right-1 flex size-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
-            </span>
+          <div className="relative grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105">
+            <Compass className="size-4.5" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[15px] font-bold tracking-tight text-foreground block leading-tight">
+              <span className="text-sm font-semibold tracking-tight text-foreground block leading-tight">
                 EventRoute
               </span>
-              <span className="rounded bg-primary/20 px-1 py-0.5 font-mono text-[9px] font-semibold text-primary">
-                v2.4
+              <span className="rounded bg-muted px-1 py-0.2 font-mono text-[9px] text-muted-foreground">
+                NCR
               </span>
             </div>
-            <span className="font-mono text-[10px] text-muted-foreground block leading-none">
-              NCR_INTELLIGENCE_MESH
+            <span className="text-[11px] text-muted-foreground block leading-none mt-0.5">
+              Delhi-NCR College Circuit
             </span>
           </div>
         </Link>
@@ -74,32 +66,32 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Global Google Auth status pill */}
         <div className="mt-1">
           {user ? (
-            <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-xs text-emerald-400">
-              <span className="flex items-center gap-1.5 font-medium">
-                <CheckCircle2 className="size-3.5 text-emerald-400" />
-                Google Verified
+            <div className="flex items-center justify-between rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-foreground">
+              <span className="flex items-center gap-1.5 text-xs">
+                <CheckCircle2 className="size-3.5 text-emerald-500" />
+                <span>Google Account</span>
               </span>
-              <span className="font-mono text-[10px] text-muted-foreground uppercase">{user.collegeId}</span>
+              <span className="text-[10px] text-muted-foreground uppercase font-mono">{user.collegeId}</span>
             </div>
           ) : (
             <div
               onClick={() => setAuthModalOpen(true)}
-              className="flex cursor-pointer items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1.5 text-xs text-amber-300 hover:bg-amber-500/20 transition-colors"
+              className="flex cursor-pointer items-center justify-between rounded-lg border border-border bg-card/60 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors"
             >
-              <span className="flex items-center gap-1.5 font-medium">
-                <Lock className="size-3.5 text-amber-400" />
-                Guest Mode
+              <span className="flex items-center gap-1.5 text-xs">
+                <Lock className="size-3.5 text-muted-foreground" />
+                <span>Guest Mode</span>
               </span>
-              <span className="text-[10px] underline font-semibold text-amber-400">Sign in</span>
+              <span className="text-[10px] text-primary font-medium hover:underline">Sign in</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex flex-col gap-1">
-        <p className="px-2 text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/70">
-          Navigation Mesh
+      <nav className="flex flex-col gap-0.5">
+        <p className="px-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/70 mb-1">
+          Menu
         </p>
         {navItems.map((n) => {
           const active = n.to === "/" ? loc.pathname === "/" : loc.pathname === n.to || loc.pathname.startsWith(n.to + "/");
@@ -110,21 +102,18 @@ export function AppShell({ children }: { children: ReactNode }) {
               key={n.to}
               to={n.to}
               onClick={() => setOpen(false)}
-              className={`flex items-center justify-between rounded-lg px-2.5 py-2 text-sm font-medium transition-all ${
+              className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 active
-                  ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                  ? "bg-primary text-primary-foreground font-semibold"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/70 hover:text-foreground"
               }`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <n.icon className={`size-4 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                <n.icon className={`size-3.5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
                 <span className="truncate">{n.label}</span>
               </div>
               {isGated && (
-                <span className="flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-mono font-semibold text-amber-400 bg-amber-500/15">
-                  <Lock className="size-2.5" />
-                  LOCKED
-                </span>
+                <Lock className="size-3 text-muted-foreground/60" />
               )}
             </Link>
           );
@@ -134,57 +123,49 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* User Section & Google Auth in Sidebar Footer */}
       <div className="mt-auto flex flex-col gap-3">
         {user ? (
-          <div className="rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3">
-            <div className="flex items-center gap-2.5">
-              <div className="relative">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="size-9 rounded-full object-cover ring-1 ring-border"
-                />
-                <div className="absolute -bottom-0.5 -right-0.5 grid size-3.5 place-items-center rounded-full bg-background shadow-xs">
-                  <GoogleLogo className="size-2.5" />
-                </div>
-              </div>
+          <div className="rounded-xl border border-sidebar-border bg-card/60 p-2.5">
+            <div className="flex items-center gap-2">
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="size-8 rounded-full object-cover ring-1 ring-border"
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-semibold text-foreground">{user.name}</p>
                 <p className="truncate text-[10px] text-muted-foreground">{user.email}</p>
               </div>
               <button
                 onClick={logout}
-                title="Sign out of Google"
-                className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                title="Sign out"
+                className="rounded-md p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
               >
                 <LogOut className="size-3.5" />
               </button>
             </div>
           </div>
         ) : (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-center">
-            <div className="mx-auto flex size-8 items-center justify-center rounded-lg bg-background border border-border shadow-xs">
-              <GoogleLogo className="size-4" />
+          <div className="rounded-xl border border-border bg-card/60 p-3 text-center">
+            <div className="mx-auto flex size-7 items-center justify-center rounded-full bg-background border border-border shadow-xs">
+              <GoogleLogo className="size-3.5" />
             </div>
-            <p className="mt-2 text-xs font-semibold text-foreground">Google Auth Required</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">
-              Unlock personalized telemetry, calendar sync & teammates.
+            <p className="mt-1.5 text-xs font-medium text-foreground">Sign in with Google</p>
+            <p className="mt-0.5 text-[10px] text-muted-foreground">
+              Sync calendar & unlock all routes.
             </p>
             <button
               onClick={() => setAuthModalOpen(true)}
-              className="mt-2.5 flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary py-1.5 text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-90 active:scale-98 transition-all"
+              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary py-1.5 text-xs font-medium text-primary-foreground hover:opacity-95 transition-all"
             >
-              <GoogleLogo className="size-3.5" />
-              Sign in with Google
+              <GoogleLogo className="size-3" />
+              <span>Connect Google</span>
             </button>
           </div>
         )}
 
         {/* Global Controls: College & Budget & Theme */}
-        <div className="space-y-2.5 rounded-xl border border-sidebar-border bg-card/40 p-3">
+        <div className="space-y-2 rounded-xl border border-sidebar-border bg-card/40 p-2.5">
           <div>
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-              <span>Home Campus Node</span>
-              <Sliders className="size-3 text-muted-foreground" />
-            </div>
+            <label className="block text-[11px] text-muted-foreground mb-1">Home College</label>
             <select
               value={profile.collegeId}
               onChange={(e) => set((s) => ({ ...s, profile: { ...s.profile, collegeId: e.target.value } }))}
@@ -199,9 +180,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
 
           <div>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Event Budget</span>
-              <span className="font-mono text-xs font-semibold text-foreground">₹{profile.budget}</span>
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>Budget per event</span>
+              <span className="font-semibold text-foreground">₹{profile.budget}</span>
             </div>
             <input
               type="range"
@@ -216,10 +197,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <button
             onClick={() => set((s) => ({ ...s, theme: s.theme === "dark" ? "light" : "dark" }))}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border border-input py-1 text-xs text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-input py-1 text-xs text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
           >
             {theme === "dark" ? <Sun className="size-3" /> : <Moon className="size-3" />}
-            {theme === "dark" ? "Switch Light Mode" : "Switch Dark Mode"}
+            {theme === "dark" ? "Light Mode" : "Dark Mode"}
           </button>
         </div>
       </div>
@@ -229,7 +210,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen">
       {/* Desktop Persistent Uniform Sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-sidebar-border bg-sidebar md:block z-30">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 border-r border-sidebar-border bg-sidebar md:block z-30">
         {sidebar}
       </aside>
 
@@ -240,7 +221,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 w-72 border-r border-sidebar-border bg-sidebar shadow-2xl">
+          <aside className="absolute inset-y-0 left-0 w-64 border-r border-sidebar-border bg-sidebar shadow-2xl">
             {sidebar}
           </aside>
         </div>
@@ -249,21 +230,19 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Main Content Area */}
       <div className="min-w-0 flex-1 flex flex-col glow-bg">
         {/* Uniform Top Header Bar across all views */}
-        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border/80 px-4 py-3 md:px-8 bg-background/80 backdrop-blur-xl">
+        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border/80 px-4 py-2.5 md:px-8 bg-background/80 backdrop-blur-xl">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setOpen(!open)}
               aria-label="Toggle menu"
-              className="rounded-md border p-1.5 text-foreground md:hidden"
+              className="rounded-md border p-1 text-foreground md:hidden"
             >
               {open ? <X className="size-4" /> : <Menu className="size-4" />}
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs text-muted-foreground hidden sm:inline">
-                NCR_PROTOCOL //
-              </span>
-              <span className="font-semibold text-foreground text-sm tracking-tight">
+              <span className="text-xs text-muted-foreground hidden sm:inline">EventRoute ·</span>
+              <span className="font-semibold text-foreground text-xs sm:text-sm tracking-tight">
                 {navItems.find((n) => (n.to === "/" ? loc.pathname === "/" : loc.pathname.startsWith(n.to)))?.label || "EventRoute"}
               </span>
             </div>
@@ -271,39 +250,36 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           {/* Right Top Status & Auth Controls */}
           <div className="flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-[11px] font-mono text-muted-foreground">
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>12 NODES ONLINE</span>
+            <div className="hidden lg:flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="size-2 rounded-full bg-emerald-500" />
+              <span>12 Delhi-NCR Campuses</span>
             </div>
 
             {user ? (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 rounded-full border border-border/80 bg-card px-2.5 py-1 text-xs">
+                <div className="flex items-center gap-2 rounded-full border border-border bg-card px-2.5 py-1 text-xs">
                   <img
                     src={user.avatar}
                     alt={user.name}
-                    className="size-5 rounded-full object-cover ring-1 ring-primary"
+                    className="size-5 rounded-full object-cover ring-1 ring-border"
                   />
                   <span className="font-medium text-foreground hidden sm:inline">{user.name.split(" ")[0]}</span>
-                  <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-[9px] font-mono text-emerald-400">
-                    VERIFIED
-                  </span>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => setAuthModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:border-primary hover:bg-primary/5 shadow-xs transition-all"
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground hover:bg-muted shadow-xs transition-colors"
               >
-                <GoogleLogo className="size-3.5" />
-                <span>Sign in with Google</span>
+                <GoogleLogo className="size-3" />
+                <span>Sign in</span>
               </button>
             )}
           </div>
         </header>
 
         {/* View Content */}
-        <main className="flex-1 w-full mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-8">{children}</main>
+        <main className="flex-1 w-full mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-8">{children}</main>
       </div>
     </div>
   );
@@ -319,10 +295,10 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4 fade-up">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 fade-up">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+        <h1 className="text-xl font-semibold tracking-tight md:text-2xl text-foreground">{title}</h1>
+        {subtitle && <p className="mt-1 text-xs sm:text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       {children}
     </div>
@@ -378,7 +354,7 @@ export function ScoreRing({ score, size = 44 }: { score: number; size?: number }
 }
 
 export const DemoNote = () => (
-  <p className="mt-10 text-center text-xs text-muted-foreground">
-    EventRoute v2.4 Multi-Campus Telemetry & Routing Engine. Real-time metro timings and AI scores computed across NCR campus nodes.
+  <p className="mt-8 text-center text-xs text-muted-foreground">
+    EventRoute Delhi-NCR · Travel times estimated via Delhi Metro network lines.
   </p>
 );
