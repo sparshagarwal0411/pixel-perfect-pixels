@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { collegeById, societies, societyById, type CollabRequest } from "@/lib/data";
 import { useStore } from "@/lib/store";
 import { Chip, DemoNote, PageHeader } from "@/components/AppShell";
+import { AuthGate } from "@/components/AuthGate";
 
 export const Route = createFileRoute("/campus")({
   head: () => ({
@@ -17,8 +18,19 @@ export const Route = createFileRoute("/campus")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Campus,
+  component: CampusRouteComponent,
 });
+
+function CampusRouteComponent() {
+  return (
+    <AuthGate
+      featureName="CampusConnect Collab Mesh"
+      description="Sign in with your Google student account to discover cross-campus teammates, post collaboration requests, and connect with university societies."
+    >
+      <Campus />
+    </AuthGate>
+  );
+}
 
 const types: CollabRequest["type"][] = ["Hackathon", "Sponsorship", "Design", "Marketing", "Technical"];
 

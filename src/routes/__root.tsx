@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "@/lib/store";
 import { AppShell } from "@/components/AppShell";
+import { GoogleAuthModal } from "@/components/GoogleAuthModal";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -85,6 +86,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
         <AppShell><Outlet /></AppShell>
+        <GoogleAuthModal />
         <Toaster />
       </StoreProvider>
     </QueryClientProvider>

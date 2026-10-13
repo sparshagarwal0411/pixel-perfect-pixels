@@ -5,6 +5,7 @@ import { fmtDate, travelEstimate } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { Chip, DemoNote, PageHeader } from "@/components/AppShell";
 import { CanIMakeIt } from "@/components/CanIMakeIt";
+import { AuthGate } from "@/components/AuthGate";
 
 export const Route = createFileRoute("/nearby")({
   head: () => ({
@@ -17,8 +18,19 @@ export const Route = createFileRoute("/nearby")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Nearby,
+  component: NearbyRouteComponent,
 });
+
+function NearbyRouteComponent() {
+  return (
+    <AuthGate
+      featureName="Nearby Opportunities & Transit Radar"
+      description="Sign in with your Google student account to calculate live transit times, metro lines, and 'Can I Make It' commute checks from your university."
+    >
+      <Nearby />
+    </AuthGate>
+  );
+}
 
 const W = 640, H = 460;
 const lats = colleges.map((c) => c.lat), lngs = colleges.map((c) => c.lng);

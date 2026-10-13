@@ -3,6 +3,7 @@ import { events, collegeById } from "@/lib/data";
 import { worthIt } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { DemoNote, PageHeader, ScoreRing } from "@/components/AppShell";
+import { AuthGate } from "@/components/AuthGate";
 
 export const Route = createFileRoute("/rank")({
   head: () => ({
@@ -15,8 +16,19 @@ export const Route = createFileRoute("/rank")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Rank,
+  component: RankRouteComponent,
 });
+
+function RankRouteComponent() {
+  return (
+    <AuthGate
+      featureName="EventRank AI Engine"
+      description="Sign in with your Google student account to calibrate AI ranking weights against your custom academic interests and travel limits."
+    >
+      <Rank />
+    </AuthGate>
+  );
+}
 
 function Rank() {
   const { profile, userReviews, set } = useStore();

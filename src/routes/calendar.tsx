@@ -5,6 +5,7 @@ import { events } from "@/lib/data";
 import { fmtDate } from "@/lib/logic";
 import { useStore, type Status } from "@/lib/store";
 import { Chip, PageHeader } from "@/components/AppShell";
+import { AuthGate } from "@/components/AuthGate";
 
 export const Route = createFileRoute("/calendar")({
   head: () => ({
@@ -17,8 +18,19 @@ export const Route = createFileRoute("/calendar")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: CalendarPage,
+  component: CalendarRouteComponent,
 });
+
+function CalendarRouteComponent() {
+  return (
+    <AuthGate
+      featureName="Personal Calendar & Schedule Tracker"
+      description="Sign in with your Google student account to access your personal event tracker, deadline reminders, and synchronized academic schedule."
+    >
+      <CalendarPage />
+    </AuthGate>
+  );
+}
 
 const tone: Record<Status, "primary" | "success" | "default" | "destructive"> = { Interested: "default", Registered: "primary", Attended: "success", Skipped: "destructive" };
 
