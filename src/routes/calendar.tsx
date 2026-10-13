@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { events } from "@/lib/data";
 import { fmtDate } from "@/lib/logic";
 import { useStore, type Status } from "@/lib/store";
 import { Chip, PageHeader } from "@/components/AppShell";
@@ -35,7 +34,7 @@ function CalendarRouteComponent() {
 const tone: Record<Status, "primary" | "success" | "default" | "destructive"> = { Interested: "default", Registered: "primary", Attended: "success", Skipped: "destructive" };
 
 function CalendarPage() {
-  const { statuses, saved, setStatus, reminders, toggleReminder } = useStore();
+  const { events, statuses, saved, setStatus, reminders, toggleReminder } = useStore();
   const [offset, setOffset] = useState(0);
   const base = new Date(); base.setDate(1); base.setMonth(base.getMonth() + offset);
   const first = (base.getDay() + 6) % 7;

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
-import { colleges, collegeById, events, type Category } from "@/lib/data";
+import { colleges, collegeById, type Category } from "@/lib/data";
 import { avgRating, fmtDate, fmtMoney, worthIt } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { DemoNote, PageHeader } from "@/components/AppShell";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/explore")({
 const cats: (Category | "All")[] = ["All", "Hackathon", "Workshop", "Competition", "Conference", "Fest"];
 
 function Explore() {
-  const { profile, userReviews } = useStore();
+  const { events, profile, userReviews } = useStore();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<Category | "All">("All");
   const [college, setCollege] = useState("all");

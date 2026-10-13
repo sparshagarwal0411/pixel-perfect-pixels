@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AlertTriangle, Bell, Bookmark, CalendarClock, Flame, Sparkles, MapPin, Compass, Network } from "lucide-react";
-import { events, collegeById, eventById } from "@/lib/data";
+import { collegeById } from "@/lib/data";
 import { fmtDate, fmtTime, overlaps, priority } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { Chip, DemoNote, PageHeader, ScoreRing } from "@/components/AppShell";
@@ -33,7 +33,7 @@ function DashboardPage() {
 }
 
 function DashboardContent() {
-  const { profile, saved, statuses, reminders, user } = useStore();
+  const { events, profile, saved, statuses, reminders, user } = useStore();
   const upcoming = events.filter((e) => new Date(e.end) > new Date());
   const committed = upcoming.filter((e) => statuses[e.id] === "Registered" || statuses[e.id] === "Interested");
   const ranked = upcoming
@@ -130,7 +130,7 @@ function DashboardContent() {
           </p>
           {conflicts.map(([a, b]) => (
             <p key={a + b} className="mt-1 text-sm">
-              <b>{eventById(a)!.title}</b> overlaps with <b>{eventById(b)!.title}</b> on {fmtDate(eventById(a)!.start)}.
+              <b>{events.find((e) => e.id === a)!.title}</b> overlaps with <b>{events.find((e) => e.id === b)!.title}</b> on {fmtDate(events.find((e) => e.id === a)!.start)}.
             </p>
           ))}
         </div>

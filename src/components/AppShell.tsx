@@ -14,11 +14,11 @@ import {
   LogOut,
   Home,
   CheckCircle2,
-  Sliders,
+  Settings,
+  History,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore } from "@/lib/store";
-import { colleges } from "@/lib/data";
 import { GoogleLogo } from "./GoogleAuthModal";
 
 export const navItems = [
@@ -32,7 +32,7 @@ export const navItems = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { theme, set, profile, user, logout, setAuthModalOpen } = useStore();
+  const { theme, set, user, logout, setAuthModalOpen } = useStore();
   const loc = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -66,13 +66,17 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Global Google Auth status pill */}
         <div className="mt-1">
           {user ? (
-            <div className="flex items-center justify-between rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-foreground">
+            <Link
+              to="/settings"
+              onClick={() => setOpen(false)}
+              className="flex items-center justify-between rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-foreground hover:bg-muted/40"
+            >
               <span className="flex items-center gap-1.5 text-xs">
                 <CheckCircle2 className="size-3.5 text-emerald-500" />
-                <span>Google Account</span>
+                <span>Profile</span>
               </span>
-              <span className="text-[10px] text-muted-foreground uppercase font-mono">{user.collegeId}</span>
-            </div>
+              <Settings className="size-3.5 text-muted-foreground" />
+            </Link>
           ) : (
             <div
               onClick={() => setAuthModalOpen(true)}
@@ -80,7 +84,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <span className="flex items-center gap-1.5 text-xs">
                 <Lock className="size-3.5 text-muted-foreground" />
-                <span>Guest Mode</span>
+                <span>Sign in</span>
               </span>
               <span className="text-[10px] text-primary font-medium hover:underline">Sign in</span>
             </div>
@@ -142,6 +146,22 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <LogOut className="size-3.5" />
               </button>
             </div>
+            <div className="mt-2 grid grid-cols-2 gap-1.5">
+              <Link
+                to="/settings"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-1 rounded-md border border-border py-1.5 text-[11px] text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+              >
+                <Settings className="size-3" /> Profile
+              </Link>
+              <Link
+                to="/history"
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center gap-1 rounded-md border border-border py-1.5 text-[11px] text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+              >
+                <History className="size-3" /> History
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="rounded-xl border border-border bg-card/60 p-3 text-center">
@@ -162,39 +182,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         )}
 
-        {/* Global Controls: College & Budget & Theme */}
-        <div className="space-y-2 rounded-xl border border-sidebar-border bg-card/40 p-2.5">
-          <div>
-            <label className="block text-[11px] text-muted-foreground mb-1">Home College</label>
-            <select
-              value={profile.collegeId}
-              onChange={(e) => set((s) => ({ ...s, profile: { ...s.profile, collegeId: e.target.value } }))}
-              className="w-full rounded-md border border-input bg-background px-2 py-1 text-xs outline-none"
-            >
-              {colleges.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.short} — {c.name.split(" ")[0]}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-              <span>Budget per event</span>
-              <span className="font-semibold text-foreground">₹{profile.budget}</span>
-            </div>
-            <input
-              type="range"
-              min={100}
-              max={3000}
-              step={50}
-              value={profile.budget}
-              onChange={(e) => set((s) => ({ ...s, profile: { ...s.profile, budget: +e.target.value } }))}
-              className="mt-1 w-full accent-primary"
-            />
-          </div>
-
+        {/* Global Theme Control */}
+        <div className="rounded-xl border border-sidebar-border bg-card/40 p-2.5">
           <button
             onClick={() => set((s) => ({ ...s, theme: s.theme === "dark" ? "light" : "dark" }))}
             className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-input py-1 text-xs text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"

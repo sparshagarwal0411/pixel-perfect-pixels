@@ -10,22 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as CampusRouteImport } from './routes/campus'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as NearbyRouteImport } from './routes/nearby'
 import { Route as RankRouteImport } from './routes/rank'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as EventsIdRouteImport } from './routes/events.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarRoute = CalendarRouteImport.update({
@@ -38,9 +35,19 @@ const CampusRoute = CampusRouteImport.update({
   path: '/campus',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NearbyRoute = NearbyRouteImport.update({
@@ -53,6 +60,11 @@ const RankRoute = RankRouteImport.update({
   path: '/rank',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsIdRoute = EventsIdRouteImport.update({
   id: '/events/$id',
   path: '/events/$id',
@@ -61,76 +73,90 @@ const EventsIdRoute = EventsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
   '/calendar': typeof CalendarRoute
   '/campus': typeof CampusRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/history': typeof HistoryRoute
   '/nearby': typeof NearbyRoute
   '/rank': typeof RankRoute
+  '/settings': typeof SettingsRoute
   '/events/$id': typeof EventsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
   '/calendar': typeof CalendarRoute
   '/campus': typeof CampusRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/history': typeof HistoryRoute
   '/nearby': typeof NearbyRoute
   '/rank': typeof RankRoute
+  '/settings': typeof SettingsRoute
   '/events/$id': typeof EventsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
   '/calendar': typeof CalendarRoute
   '/campus': typeof CampusRoute
+  '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/history': typeof HistoryRoute
   '/nearby': typeof NearbyRoute
   '/rank': typeof RankRoute
+  '/settings': typeof SettingsRoute
   '/events/$id': typeof EventsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
     | '/calendar'
     | '/campus'
+    | '/dashboard'
     | '/explore'
+    | '/history'
     | '/nearby'
     | '/rank'
+    | '/settings'
     | '/events/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
     | '/calendar'
     | '/campus'
+    | '/dashboard'
     | '/explore'
+    | '/history'
     | '/nearby'
     | '/rank'
+    | '/settings'
     | '/events/$id'
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
     | '/calendar'
     | '/campus'
+    | '/dashboard'
     | '/explore'
+    | '/history'
     | '/nearby'
     | '/rank'
+    | '/settings'
     | '/events/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
   CalendarRoute: typeof CalendarRoute
   CampusRoute: typeof CampusRoute
+  DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
+  HistoryRoute: typeof HistoryRoute
   NearbyRoute: typeof NearbyRoute
   RankRoute: typeof RankRoute
+  SettingsRoute: typeof SettingsRoute
   EventsIdRoute: typeof EventsIdRoute
 }
 
@@ -141,13 +167,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendar': {
@@ -164,11 +183,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CampusRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore': {
       id: '/explore'
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nearby': {
@@ -185,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RankRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events/$id': {
       id: '/events/$id'
       path: '/events/$id'
@@ -197,24 +237,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
   CalendarRoute: CalendarRoute,
   CampusRoute: CampusRoute,
+  DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
+  HistoryRoute: HistoryRoute,
   NearbyRoute: NearbyRoute,
   RankRoute: RankRoute,
+  SettingsRoute: SettingsRoute,
   EventsIdRoute: EventsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

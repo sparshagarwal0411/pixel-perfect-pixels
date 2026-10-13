@@ -2,24 +2,20 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, Bell, Bookmark, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { collegeById, eventById } from "@/lib/data";
+import { collegeById } from "@/lib/data";
 import { avgRating, fmtDate, fmtMoney, fmtTime, worthIt } from "@/lib/logic";
 import { useStore, type Status } from "@/lib/store";
 import { Chip, ScoreRing } from "@/components/AppShell";
 import { CanIMakeIt } from "@/components/CanIMakeIt";
 
 export const Route = createFileRoute("/events/$id")({
-  loader: ({ params }) => {
-    const e = eventById(params.id);
-    if (!e) throw notFound();
-    return { e };
-  },
+  loader: ({ params }) => ({ id: params.id }),
   head: ({ loaderData }) => ({
     meta: [
-      { title: loaderData ? `${loaderData.e.title} — AvsarMarg` : "Event — AvsarMarg" },
-      { name: "description", content: loaderData?.e.description ?? "Event details" },
-      { property: "og:title", content: loaderData?.e.title ?? "Event" },
-      { property: "og:description", content: loaderData?.e.description ?? "Event details" },
+      { title: "Event — AvsarMarg" },
+      { name: "description", content: "Event details" },
+      { property: "og:title", content: "Event" },
+      { property: "og:description", content: "Event details" },
       { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -30,8 +26,11 @@ export const Route = createFileRoute("/events/$id")({
 const statuses: Status[] = ["Interested", "Registered", "Attended", "Skipped"];
 
 function EventPage() {
-  const { e } = Route.useLoaderData();
   const store = useStore();
+  const e = store.events.find((event) => event.id === Route.useLoaderData().id);
+  if (!e) {
+    throw notFound();
+  }
   const mine = store.userReviews[e.id] ?? [];
   const all = [...e.reviews, ...mine];
   const w = worthIt(e, store.profile, mine);

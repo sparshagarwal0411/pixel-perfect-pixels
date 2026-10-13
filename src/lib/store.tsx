@@ -1,8 +1,15 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { seedRequests, type CollabRequest, type Review } from "./data";
+import {
+  events as demoEvents,
+  seedRequests,
+  type CollabRequest,
+  type EventItem,
+  type Review,
+} from "./data";
 import type { Profile } from "./logic";
 import { supabase, isSupabaseConfigured } from "./supabase";
+import { loadEvents } from "./remote-events";
 
 export type Status = "Interested" | "Registered" | "Attended" | "Skipped";
 
@@ -59,6 +66,7 @@ export const PRESET_GOOGLE_USERS: GoogleUser[] = [
 
 interface State {
   user: GoogleUser | null;
+  events: EventItem[];
   profile: Profile;
   saved: string[];
   statuses: Record<string, Status>;
@@ -73,6 +81,7 @@ interface State {
 
 const initial: State = {
   user: null, // default to unauthenticated
+  events: demoEvents,
   profile: {
     name: "Student",
     collegeId: "dtu",
@@ -188,6 +197,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
 
     setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    void loadEvents().then((events) => {
+      setState((s) => ({ ...s, events }));
+    });
   }, []);
 
   useEffect(() => {

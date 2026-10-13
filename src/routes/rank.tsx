@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { events, collegeById } from "@/lib/data";
+import { collegeById } from "@/lib/data";
 import { worthIt } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { DemoNote, PageHeader, ScoreRing } from "@/components/AppShell";
@@ -31,7 +31,7 @@ function RankRouteComponent() {
 }
 
 function Rank() {
-  const { profile, userReviews, set } = useStore();
+  const { events, profile, userReviews, set } = useStore();
   const ranked = events.map((e) => ({ e, w: worthIt(e, profile, userReviews[e.id]) })).sort((a, b) => b.w.score - a.w.score);
   const allTags = Array.from(new Set(events.flatMap((e) => e.tags)));
   return (
