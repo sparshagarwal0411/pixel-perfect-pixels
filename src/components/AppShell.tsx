@@ -16,6 +16,9 @@ import {
   CheckCircle2,
   Sliders,
   Terminal,
+  Activity,
+  Layers,
+  Sparkles,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useStore } from "@/lib/store";
@@ -23,10 +26,11 @@ import { colleges } from "@/lib/data";
 import { GoogleLogo } from "./GoogleAuthModal";
 
 export const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, isProtected: true },
+  { to: "/", label: "Overview & Features", icon: Home, isProtected: false },
+  { to: "/dashboard", label: "My Dashboard", icon: LayoutDashboard, isProtected: true },
   { to: "/explore", label: "Explore Events", icon: Compass, isProtected: false },
   { to: "/nearby", label: "Nearby Radar", icon: MapPinned, isProtected: true },
-  { to: "/calendar", label: "My Calendar", icon: CalendarDays, isProtected: true },
+  { to: "/calendar", label: "Calendar & Sync", icon: CalendarDays, isProtected: true },
   { to: "/rank", label: "EventRank AI", icon: Trophy, isProtected: true },
   { to: "/campus", label: "CampusConnect", icon: Network, isProtected: true },
 ] as const;
@@ -36,46 +40,38 @@ export function AppShell({ children }: { children: ReactNode }) {
   const loc = useLocation();
   const [open, setOpen] = useState(false);
 
-  // If we are on the Landing / Main page ("/"), don't render the dashboard sidebar!
-  // The landing page has its own dedicated futuristic header and full-bleed layout.
-  if (loc.pathname === "/") {
-    return <>{children}</>;
-  }
-
   const sidebar = (
-    <div className="flex h-full flex-col gap-5 p-4 overflow-y-auto">
-      {/* Brand Header & Home Link */}
-      <div className="flex flex-col gap-2 pt-1">
-        <div className="flex items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center gap-2.5 px-1 group"
-            onClick={() => setOpen(false)}
-          >
-            <div className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm shadow-primary/30 transition-transform group-hover:scale-105">
-              <MapPinned className="size-4.5" />
-            </div>
-            <div>
+    <div className="flex h-full flex-col gap-4 p-4 overflow-y-auto">
+      {/* Brand Header */}
+      <div className="flex flex-col gap-2 pt-1 border-b border-sidebar-border pb-3">
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 px-1 group"
+          onClick={() => setOpen(false)}
+        >
+          <div className="relative grid size-8.5 place-items-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/30 transition-transform group-hover:scale-105">
+            <Compass className="size-5" />
+            <span className="absolute -top-1 -right-1 flex size-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
+            </span>
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5">
               <span className="text-[15px] font-bold tracking-tight text-foreground block leading-tight">
                 EventRoute
               </span>
-              <span className="font-mono text-[10px] text-primary block leading-none">
-                SYS_CORE v2.4
+              <span className="rounded bg-primary/20 px-1 py-0.5 font-mono text-[9px] font-semibold text-primary">
+                v2.4
               </span>
             </div>
-          </Link>
+            <span className="font-mono text-[10px] text-muted-foreground block leading-none">
+              NCR_INTELLIGENCE_MESH
+            </span>
+          </div>
+        </Link>
 
-          <Link
-            to="/"
-            className="rounded-md border border-border/80 px-2 py-1 text-[11px] font-mono text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            title="Return to Landing Page"
-          >
-            <Home className="inline size-3 mr-1" />
-            Home
-          </Link>
-        </div>
-
-        {/* Auth status indicator pill */}
+        {/* Global Google Auth status pill */}
         <div className="mt-1">
           {user ? (
             <div className="flex items-center justify-between rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-xs text-emerald-400">
@@ -92,9 +88,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             >
               <span className="flex items-center gap-1.5 font-medium">
                 <Lock className="size-3.5 text-amber-400" />
-                Guest Mode (Limited)
+                Guest Mode
               </span>
-              <span className="text-[10px] underline font-medium">Sign in</span>
+              <span className="text-[10px] underline font-semibold text-amber-400">Sign in</span>
             </div>
           )}
         </div>
@@ -106,7 +102,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           Navigation Mesh
         </p>
         {navItems.map((n) => {
-          const active = loc.pathname === n.to || loc.pathname.startsWith(n.to + "/");
+          const active = n.to === "/" ? loc.pathname === "/" : loc.pathname === n.to || loc.pathname.startsWith(n.to + "/");
           const isGated = n.isProtected && !user;
 
           return (
@@ -127,7 +123,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               {isGated && (
                 <span className="flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-mono font-semibold text-amber-400 bg-amber-500/15">
                   <Lock className="size-2.5" />
-                  AUTH
+                  LOCKED
                 </span>
               )}
             </Link>
@@ -135,7 +131,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         })}
       </nav>
 
-      {/* User Section & Google Auth */}
+      {/* User Section & Google Auth in Sidebar Footer */}
       <div className="mt-auto flex flex-col gap-3">
         {user ? (
           <div className="rounded-xl border border-sidebar-border bg-sidebar-accent/40 p-3">
@@ -166,11 +162,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : (
           <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 text-center">
             <div className="mx-auto flex size-8 items-center justify-center rounded-lg bg-background border border-border shadow-xs">
-              <GoogleLogo className="size-4.5" />
+              <GoogleLogo className="size-4" />
             </div>
             <p className="mt-2 text-xs font-semibold text-foreground">Google Auth Required</p>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
-              Sign in to unlock all sidebar telemetry & routing tools.
+              Unlock personalized telemetry, calendar sync & teammates.
             </p>
             <button
               onClick={() => setAuthModalOpen(true)}
@@ -232,8 +228,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen">
-      {/* Desktop Sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-sidebar-border bg-sidebar md:block">
+      {/* Desktop Persistent Uniform Sidebar */}
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-sidebar-border bg-sidebar md:block z-30">
         {sidebar}
       </aside>
 
@@ -251,43 +247,63 @@ export function AppShell({ children }: { children: ReactNode }) {
       )}
 
       {/* Main Content Area */}
-      <div className="min-w-0 flex-1 glow-bg">
-        {/* Mobile Header Bar */}
-        <header className="flex items-center justify-between border-b px-4 py-3 md:hidden bg-card/60 backdrop-blur-md">
+      <div className="min-w-0 flex-1 flex flex-col glow-bg">
+        {/* Uniform Top Header Bar across all views */}
+        <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border/80 px-4 py-3 md:px-8 bg-background/80 backdrop-blur-xl">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setOpen(!open)}
               aria-label="Toggle menu"
-              className="rounded-md border p-1.5 text-foreground"
+              className="rounded-md border p-1.5 text-foreground md:hidden"
             >
               {open ? <X className="size-4" /> : <Menu className="size-4" />}
             </button>
+
             <div className="flex items-center gap-2">
-              <span className="font-bold tracking-tight">EventRoute</span>
-              <span className="rounded bg-primary/20 px-1 py-0.5 font-mono text-[9px] text-primary">v2.4</span>
+              <span className="font-mono text-xs text-muted-foreground hidden sm:inline">
+                NCR_PROTOCOL //
+              </span>
+              <span className="font-semibold text-foreground text-sm tracking-tight">
+                {navItems.find((n) => (n.to === "/" ? loc.pathname === "/" : loc.pathname.startsWith(n.to)))?.label || "EventRoute"}
+              </span>
             </div>
           </div>
 
-          <div>
+          {/* Right Top Status & Auth Controls */}
+          <div className="flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-[11px] font-mono text-muted-foreground">
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>12 NODES ONLINE</span>
+            </div>
+
             {user ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="size-7 rounded-full object-cover ring-1 ring-primary"
-              />
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 rounded-full border border-border/80 bg-card px-2.5 py-1 text-xs">
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="size-5 rounded-full object-cover ring-1 ring-primary"
+                  />
+                  <span className="font-medium text-foreground hidden sm:inline">{user.name.split(" ")[0]}</span>
+                  <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-[9px] font-mono text-emerald-400">
+                    VERIFIED
+                  </span>
+                </div>
+              </div>
             ) : (
               <button
                 onClick={() => setAuthModalOpen(true)}
-                className="flex items-center gap-1 rounded-md bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground"
+                className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:border-primary hover:bg-primary/5 shadow-xs transition-all"
               >
-                <GoogleLogo className="size-3" />
-                Sign In
+                <GoogleLogo className="size-3.5" />
+                <span>Sign in with Google</span>
               </button>
             )}
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-10">{children}</main>
+        {/* View Content */}
+        <main className="flex-1 w-full mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-8">{children}</main>
       </div>
     </div>
   );
