@@ -208,7 +208,7 @@ function DashboardContent() {
 }
 
 function WeekStrip() {
-  const { statuses, saved } = useStore();
+  const { events, statuses, saved } = useStore();
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
