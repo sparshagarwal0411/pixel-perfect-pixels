@@ -2,14 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { Bookmark, CheckCircle2, MapPin, Star } from "lucide-react";
 import { toast } from "sonner";
 import { collegeById, type EventItem } from "@/lib/data";
-import { avgRating, fmtDate, fmtMoney, worthIt } from "@/lib/logic";
+import { avgRating, fmtDate, fmtMoney } from "@/lib/logic";
 import { useStore } from "@/lib/store";
-import { Chip, ScoreRing } from "./AppShell";
+import { Chip } from "./AppShell";
 
 export function EventCard({ e, compareSelected, onCompare }: { e: EventItem; compareSelected?: boolean; onCompare?: () => void }) {
-  const { saved, toggleSave, profile, userReviews, statuses, setStatus } = useStore();
-  const w = worthIt(e, profile, userReviews[e.id]);
-  const avg = avgRating([...e.reviews, ...(userReviews[e.id] ?? [])]);
+  const { saved, toggleSave, userReviews, statuses, setStatus } = useStore();
+  const allReviews = [...e.reviews, ...(userReviews[e.id] ?? [])];
+  const avg = avgRating(allReviews);
   const isSaved = saved.includes(e.id);
   const isRegistered = statuses[e.id] === "Registered";
   const isAttended = statuses[e.id] === "Attended";
@@ -48,12 +48,11 @@ export function EventCard({ e, compareSelected, onCompare }: { e: EventItem; com
             <MapPin className="size-3" /> {collegeById(e.collegeId).short} · {e.organizer}
           </p>
         </div>
-        <ScoreRing score={w.score} />
       </div>
       <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
         <div><p className="text-muted-foreground">Date</p><p className="font-medium">{fmtDate(e.start)}</p></div>
         <div><p className="text-muted-foreground">Fee</p><p className="font-medium">{fmtMoney(e.fee)}</p></div>
-        <div><p className="text-muted-foreground">Rating</p><p className="flex items-center gap-1 font-medium">{avg ? <><Star className="size-3 fill-warning text-warning" />{avg.toFixed(1)} <span className="text-muted-foreground">({w.reviewCount})</span></> : <span className="text-muted-foreground">No reviews</span>}</p></div>
+        <div><p className="text-muted-foreground">Rating</p><p className="flex items-center gap-1 font-medium">{avg ? <><Star className="size-3 fill-warning text-warning" />{avg.toFixed(1)} <span className="text-muted-foreground">({allReviews.length})</span></> : <span className="text-muted-foreground">No reviews</span>}</p></div>
       </div>
       <p className="mt-3 line-clamp-1 text-xs text-muted-foreground">{e.eligibility}</p>
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t pt-3">

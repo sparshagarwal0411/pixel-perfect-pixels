@@ -14,8 +14,7 @@ import {
 import { GoogleLogo } from "./GoogleAuthModal";
 import { colleges, collegeById, events } from "@/lib/data";
 import { useStore } from "@/lib/store";
-import { worthIt, fmtDate, fmtMoney } from "@/lib/logic";
-import { ScoreRing } from "./AppShell";
+import { travelEstimate, fmtDate, fmtMoney } from "@/lib/logic";
 
 export function MouseGridHero() {
   const { profile, setAuthModalOpen } = useStore();
@@ -57,7 +56,7 @@ export function MouseGridHero() {
   // Compute a highlight event for this campus
   const topEvent = events.find((e) => e.collegeId !== selectedCampus) || events[0];
   const eventCollege = collegeById(topEvent.collegeId);
-  const scoreData = worthIt(topEvent, { ...profile, collegeId: selectedCampus });
+  const travel = travelEstimate(selectedCampus, topEvent.collegeId);
 
   return (
     <section
@@ -101,7 +100,7 @@ export function MouseGridHero() {
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
             Compare upcoming hackathons across DTU, IIT Delhi, NSUT, and IIITD. We calculate real metro travel times,
-            honest prize-to-commute scores, and flag schedule conflicts before you register.
+            transit routes, and flag schedule conflicts before you register.
           </p>
 
           {/* Action Buttons */}

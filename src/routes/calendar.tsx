@@ -64,26 +64,26 @@ interface HackEventInfo {
   subtitle?: string;
   badge?: string;
   iconName:
-    | "linkedin"
-    | "gandhi"
-    | "heart"
-    | "mic"
-    | "student"
-    | "trophy"
-    | "bow"
-    | "pumpkin"
-    | "pepsi"
-    | "hp"
-    | "hcl"
-    | "accenture"
-    | "maruti"
-    | "robot"
-    | "briefcase"
-    | "laptop"
-    | "coffee"
-    | "zap"
-    | "video"
-    | "lock";
+  | "linkedin"
+  | "gandhi"
+  | "heart"
+  | "mic"
+  | "student"
+  | "trophy"
+  | "bow"
+  | "pumpkin"
+  | "pepsi"
+  | "hp"
+  | "hcl"
+  | "accenture"
+  | "maruti"
+  | "robot"
+  | "briefcase"
+  | "laptop"
+  | "coffee"
+  | "zap"
+  | "video"
+  | "lock";
 }
 
 // 31 curated daily opportunities matching the user's Hack Your Month poster
@@ -429,22 +429,20 @@ function CalendarPage() {
           <button
             type="button"
             onClick={() => setFilterMode("all")}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
-              filterMode === "all"
+            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${filterMode === "all"
                 ? "border-primary bg-primary text-primary-foreground font-semibold shadow-xs"
                 : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
+              }`}
           >
             All Events &amp; Daily Track
           </button>
           <button
             type="button"
             onClick={() => setFilterMode("tracked")}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
-              filterMode === "tracked"
+            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${filterMode === "tracked"
                 ? "border-primary bg-primary text-primary-foreground font-semibold shadow-xs"
                 : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-            }`}
+              }`}
           >
             My Tracked ({trackedEvents.length})
           </button>
@@ -661,7 +659,7 @@ function CalendarPage() {
                           params={{ id: ev.id }}
                           className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90 shadow-xs transition-opacity"
                         >
-                          View Map →
+                          View Details →
                         </Link>
                       </div>
                     );
@@ -831,11 +829,10 @@ function CalendarDayTile({
       {/* Top row: Date Number + Today Ring + Brand Tag */}
       <div className="flex items-start justify-between gap-1">
         <span
-          className={`font-mono text-xs sm:text-sm font-semibold transition-colors ${
-            isToday
+          className={`font-mono text-xs sm:text-sm font-semibold transition-colors ${isToday
               ? "grid size-5 sm:size-6 place-items-center rounded-full bg-primary text-primary-foreground ring-2 ring-primary/30 font-bold shadow-xs"
               : "text-foreground group-hover:text-primary"
-          }`}
+            }`}
         >
           {dayNum}
         </span>
@@ -869,11 +866,10 @@ function CalendarDayTile({
         {circuitEvents.map((ce) => (
           <div
             key={ce.id}
-            className={`truncate rounded px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium flex items-center justify-between border ${
-              statuses[ce.id] === "Registered"
+            className={`truncate rounded px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium flex items-center justify-between border ${statuses[ce.id] === "Registered"
                 ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
                 : "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors"
-            }`}
+              }`}
             title={`${ce.title} (${collegeById(ce.collegeId).short})`}
           >
             <span className="truncate">{ce.title}</span>
