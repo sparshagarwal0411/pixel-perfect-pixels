@@ -146,6 +146,7 @@ function EventPage() {
         </div>
 
         <aside className="space-y-4">
+          <div className="card-surface space-y-3 p-4">
             <p className="text-xs text-muted-foreground">Track this event</p>
 
             {/* Quick Registration Checkbox in sidebar */}
