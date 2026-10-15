@@ -15,10 +15,9 @@ import {
   Search,
 } from "lucide-react";
 import { events, colleges, collegeById } from "@/lib/data";
-import { fmtDate, fmtMoney, worthIt } from "@/lib/logic";
+import { fmtDate, fmtMoney } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { GoogleLogo } from "@/components/GoogleAuthModal";
-import { ScoreRing } from "@/components/AppShell";
 import { MouseGridHero } from "@/components/MouseGridHero";
 
 export const Route = createFileRoute("/")({
@@ -28,7 +27,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Compare college hackathons across DTU, IIT Delhi, NSUT, and IIITD with transparent Worth-It scores and metro transit times.",
+          "Compare college hackathons across DTU, IIT Delhi, NSUT, and IIITD with direct Delhi metro transit times and schedule tracking.",
       },
     ],
   }),
@@ -36,23 +35,7 @@ export const Route = createFileRoute("/")({
 });
 
 export function LandingPage() {
-  const { profile, setAuthModalOpen } = useStore();
-
-  // Algorithm Sandbox state
-  const [sandboxPrize, setSandboxPrize] = useState(150000);
-  const [sandboxDistance, setSandboxDistance] = useState(16);
-  const [sandboxFee, setSandboxFee] = useState(150);
-  const [sandboxMatch, setSandboxMatch] = useState(85);
-
-  // Calculate dynamic simulator score
-  const sandboxScore = useMemo(() => {
-    const prizeScore = Math.min(35, (sandboxPrize / 300000) * 35);
-    const distScore = Math.max(0, 25 - (sandboxDistance / 40) * 25);
-    const feeScore = Math.max(0, 20 - (sandboxFee / 1000) * 20);
-    const matchScore = (sandboxMatch / 100) * 20;
-    return Math.round(prizeScore + distScore + feeScore + matchScore);
-  }, [sandboxPrize, sandboxDistance, sandboxFee, sandboxMatch]);
-
+  const { setAuthModalOpen } = useStore();
   const featuredEvents = useMemo(() => events.slice(0, 3), []);
 
   return (
@@ -76,10 +59,9 @@ export function LandingPage() {
             <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Trophy className="size-4.5" />
             </div>
-            <h3 className="text-sm font-semibold text-foreground">Worth-It™ Scoring</h3>
+            <h3 className="text-sm font-semibold text-foreground">Curated Delhi Circuit</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              We weigh prize pool size against travel time, entry fees, and past participant reviews to give each event
-              an honest 0-100 score.
+              Discover verified hackathons, competitions, workshops, and college fests across DTU, IIT Delhi, NSUT, and IIITD.
             </p>
           </div>
 
@@ -115,122 +97,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* 3. INTERACTIVE WORTH-IT CALCULATOR */}
-      <section className="rounded-2xl border border-border bg-card p-6 md:p-8 space-y-6">
-        <div className="max-w-xl">
-          <div className="inline-flex items-center gap-1.5 text-xs font-medium text-primary mb-1">
-            <Sliders className="size-3.5" />
-            <span>Interactive Tool</span>
-          </div>
-          <h2 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground">
-            How the Worth-It™ Formula calculates an event
-          </h2>
-          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Adjust the levers below to see how prize money, metro distance, and registration costs shift an event's score.
-          </p>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
-          {/* Sliders */}
-          <div className="lg:col-span-7 space-y-4">
-            <div>
-              <div className="flex justify-between text-xs font-medium mb-1">
-                <span>Prize Pool: ₹{sandboxPrize.toLocaleString()}</span>
-                <span className="text-muted-foreground">Higher = more incentive</span>
-              </div>
-              <input
-                type="range"
-                min={10000}
-                max={500000}
-                step={10000}
-                value={sandboxPrize}
-                onChange={(e) => setSandboxPrize(+e.target.value)}
-                className="w-full accent-primary"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-medium mb-1">
-                <span>Travel Distance: {sandboxDistance} km</span>
-                <span className="text-muted-foreground">From home college</span>
-              </div>
-              <input
-                type="range"
-                min={2}
-                max={45}
-                step={1}
-                value={sandboxDistance}
-                onChange={(e) => setSandboxDistance(+e.target.value)}
-                className="w-full accent-primary"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-medium mb-1">
-                <span>Registration Fee: {sandboxFee === 0 ? "Free" : `₹${sandboxFee}`}</span>
-                <span className="text-muted-foreground">Direct student cost</span>
-              </div>
-              <input
-                type="range"
-                min={0}
-                max={1000}
-                step={50}
-                value={sandboxFee}
-                onChange={(e) => setSandboxFee(+e.target.value)}
-                className="w-full accent-primary"
-              />
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-medium mb-1">
-                <span>Interest Relevance: {sandboxMatch}%</span>
-                <span className="text-muted-foreground">Matches your tech stack</span>
-              </div>
-              <input
-                type="range"
-                min={30}
-                max={100}
-                step={5}
-                value={sandboxMatch}
-                onChange={(e) => setSandboxMatch(+e.target.value)}
-                className="w-full accent-primary"
-              />
-            </div>
-          </div>
-
-          {/* Result Card */}
-          <div className="lg:col-span-5 rounded-xl border border-border bg-background p-6 text-center space-y-3">
-            <span className="text-xs text-muted-foreground uppercase font-medium">Calculated Worth-It Score</span>
-            <div className="py-2 flex justify-center">
-              <ScoreRing score={sandboxScore} size={90} />
-            </div>
-            <div>
-              <span
-                className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                  sandboxScore >= 75
-                    ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                    : sandboxScore >= 55
-                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                    : "bg-red-500/15 text-red-600 dark:text-red-400"
-                }`}
-              >
-                {sandboxScore >= 75
-                  ? "Definitely Worth It"
-                  : sandboxScore >= 55
-                  ? "Decent Opportunity"
-                  : "Consider Local Alternatives"}
-              </span>
-              <p className="text-xs text-muted-foreground mt-2 max-w-xs mx-auto">
-                {sandboxScore >= 75
-                  ? "Strong prize pool and reasonable travel time justify weekend participation."
-                  : "Fair balance. Worth attending if the theme closely matches your portfolio goals."}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. UPCOMING EVENTS TEASER */}
+      {/* 3. UPCOMING EVENTS TEASER */}
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -253,7 +120,6 @@ export function LandingPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featuredEvents.map((e) => {
             const clg = collegeById(e.collegeId);
-            const w = worthIt(e, profile);
             return (
               <div
                 key={e.id}
@@ -264,7 +130,9 @@ export function LandingPage() {
                     <span className="rounded bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                       {e.category}
                     </span>
-                    <ScoreRing score={w.score} size={36} />
+                    <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      {clg.short}
+                    </span>
                   </div>
 
                   <h3 className="mt-2 text-sm font-semibold text-foreground line-clamp-1">{e.title}</h3>

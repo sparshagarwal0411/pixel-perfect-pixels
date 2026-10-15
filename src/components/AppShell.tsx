@@ -27,7 +27,6 @@ export const navItems = [
   { to: "/explore", label: "Explore Events", icon: Compass, isProtected: false },
   { to: "/nearby", label: "Transit Radar", icon: MapPinned, isProtected: true },
   { to: "/calendar", label: "Calendar", icon: CalendarDays, isProtected: true },
-  // { to: "/rank", label: "Worth-It Rankings", icon: Trophy, isProtected: true },
   { to: "/campus", label: "Campus Collab", icon: Network, isProtected: true },
 ] as const;
 
