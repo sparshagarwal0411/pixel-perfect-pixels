@@ -175,12 +175,11 @@ export function MouseGridHero() {
             <div className="rounded-xl border border-border/80 bg-background/60 p-3.5 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">
-                  Top Recommended Event
+                  Featured Event
                 </span>
-                <div className="flex items-center gap-1">
-                  <span className="text-xs font-semibold text-primary font-mono">{scoreData.score}/100</span>
-                  <span className="text-[10px] text-muted-foreground">Worth-It</span>
-                </div>
+                <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  {topEvent.category}
+                </span>
               </div>
 
               <div>
@@ -194,11 +193,11 @@ export function MouseGridHero() {
               <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border/60">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Clock className="size-3.5 text-primary" />
-                  <span>{scoreData.travel.minutes} min metro</span>
+                  <span>{travel.minutes} min metro</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="size-3.5 text-primary" />
-                  <span>₹{scoreData.travel.cost} est. fare</span>
+                  <span>₹{travel.cost} est. fare</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Calendar className="size-3.5 text-primary" />
