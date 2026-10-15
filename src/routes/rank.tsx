@@ -1,13 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-<<<<<<< HEAD
-import { collegeById } from "@/lib/data";
-import { fmtDate } from "@/lib/logic";
-=======
 import { collegeById, type EventItem } from "@/lib/data";
 import { travelEstimate } from "@/lib/logic";
->>>>>>> feature/harsh
 import { useStore } from "@/lib/store";
-import { DemoNote, PageHeader } from "@/components/AppShell";
+import { DemoNote, PageHeader, ScoreRing } from "@/components/AppShell";
 import { AuthGate } from "@/components/AuthGate";
 
 export const Route = createFileRoute("/rank")({
@@ -51,10 +46,6 @@ function computeMatch(e: EventItem, interests: string[], collegeId: string, user
 }
 
 function Rank() {
-<<<<<<< HEAD
-  const { events, profile, set } = useStore();
-  const ranked = [...events].sort((a, b) => +new Date(a.start) - +new Date(b.start));
-=======
   const { events, profile, userReviews, set } = useStore();
   const ranked = events
     .map((e) => ({
@@ -63,16 +54,11 @@ function Rank() {
     }))
     .sort((a, b) => b.m.score - a.m.score);
 
->>>>>>> feature/harsh
   const allTags = Array.from(new Set(events.flatMap((e) => e.tags)));
 
   return (
     <>
-<<<<<<< HEAD
-      <PageHeader title="Upcoming events" subtitle="Browse synced competitions and opportunities by date." />
-=======
       <PageHeader title="EventRank" subtitle="Ranked according to your academic interests and campus proximity." />
->>>>>>> feature/harsh
       <div className="mb-6 card-surface p-4">
         <p className="mb-2 text-xs text-muted-foreground">Select your interests to customize recommendations</p>
         <div className="flex flex-wrap gap-1.5">
@@ -99,17 +85,6 @@ function Rank() {
             );
           })}
         </div>
-<<<<<<< HEAD
-        <p className="mt-3 text-[11px] text-muted-foreground">Use your interests to keep event recommendations relevant.</p>
-      </div>
-      <div className="space-y-2">
-        {ranked.map((e, i) => (
-          <Link key={e.id} to="/events/$id" params={{ id: e.id }} className="card-surface flex items-center gap-4 p-3 hover:border-primary/40 fade-up">
-            <span className="w-6 text-center font-mono text-sm text-muted-foreground">{i + 1}</span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-medium">{e.title}</p>
-              <p className="text-xs text-muted-foreground">{collegeById(e.collegeId).short} · {fmtDate(e.start)}</p>
-=======
         <p className="mt-3 text-[11px] text-muted-foreground">
           Match Factors: Interest Alignment 50% · Campus Proximity 25% · Event Quality 25%.
         </p>
@@ -140,7 +115,6 @@ function Rank() {
                   </div>
                 </div>
               ))}
->>>>>>> feature/harsh
             </div>
           </Link>
         ))}

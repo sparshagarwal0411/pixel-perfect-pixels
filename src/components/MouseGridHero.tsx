@@ -100,11 +100,7 @@ export function MouseGridHero() {
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
             Compare upcoming hackathons across DTU, IIT Delhi, NSUT, and IIITD. We calculate real metro travel times,
-<<<<<<< HEAD
-            clear event details, travel times, and schedule conflict warnings before you register.
-=======
             transit routes, and flag schedule conflicts before you register.
->>>>>>> feature/harsh
           </p>
 
           {/* Action Buttons */}

@@ -41,12 +41,7 @@ function Explore() {
     );
     return out.sort((a, b) =>
       sort === "date" ? +new Date(a.start) - +new Date(b.start)
-<<<<<<< HEAD
-      : sort === "fee" ? a.fee - b.fee
-      : 0,
-=======
       : a.fee - b.fee
->>>>>>> feature/harsh
     );
   }, [q, cat, college, freeOnly, sort, events]);
 

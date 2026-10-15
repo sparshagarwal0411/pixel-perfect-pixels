@@ -28,12 +28,7 @@ export const Route = createFileRoute("/")({
 });
 export function LandingPage() {
   const { setAuthModalOpen } = useStore();
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/harsh
   const featuredEvents = useMemo(() => events.slice(0, 3), []);
-
 
   return (
     <div className="space-y-14 pb-12">
@@ -54,8 +49,6 @@ export function LandingPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-2xl border border-border bg-card p-4.5 space-y-2 hover:border-primary/40 transition-colors">
             <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-<<<<<<< HEAD
-=======
               <Trophy className="size-4.5" />
             </div>
             <h3 className="text-sm font-semibold text-foreground">Curated Delhi Circuit</h3>
@@ -66,7 +59,6 @@ export function LandingPage() {
 
           <div className="rounded-2xl border border-border bg-card p-4.5 space-y-2 hover:border-primary/40 transition-colors">
             <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
->>>>>>> feature/harsh
               <MapPin className="size-4.5" />
             </div>
             <h3 className="text-sm font-semibold text-foreground">Delhi Metro Transit</h3>
@@ -97,11 +89,7 @@ export function LandingPage() {
         </div>
       </section>
 
-<<<<<<< HEAD
-      {/* 4. UPCOMING EVENTS TEASER */}
-=======
       {/* 3. UPCOMING EVENTS TEASER */}
->>>>>>> feature/harsh
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -134,12 +122,9 @@ export function LandingPage() {
                     <span className="rounded bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                       {e.category}
                     </span>
-<<<<<<< HEAD
-=======
                     <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
                       {clg.short}
                     </span>
->>>>>>> feature/harsh
                   </div>
 
                   <h3 className="mt-2 text-sm font-semibold text-foreground line-clamp-1">{e.title}</h3>

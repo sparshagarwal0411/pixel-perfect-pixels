@@ -14,15 +14,9 @@ MargDarshak solves a real problem for college students in Delhi: finding out the
 
 | Feature | Route | Description |
 |---|---|---|
-<<<<<<< HEAD
-| **Landing & Algorithm Sandbox** | `/` | Intractive Worth-It Score simulator — drag sliders for prize, distance, fee and interest match to see how the ranking formula works in real time. |
-| **Explore** | `/explore` | Search, filter (category, college, fee range), and compare events side-by-side with scores and reviews. |
-| **EventRank** | `/rank` | Every event gets a transparent **Worth-It Score** (0–100) built from quality, cost, travel time, tag relevance, and community reviews. No black boxes. |
-=======
 | **Landing & Interactive Hero** | `/` | Delhi-NCR college hackathon explorer with live transit estimates and campus selection. |
 | **Explore** | `/explore` | Search, filter (category, college, fee range), and compare events side-by-side with ratings and reviews. |
 | **EventRank** | `/rank` | Personalized match ranking built from student interests, transit proximity, and community reviews. |
->>>>>>> feature/harsh
 | **Transit Radar** | `/nearby` | Leaflet map with campus pins, straight-line distance + estimated metro/auto travel time and cost. "Can I Make It?" widget checks timing, budget, and schedule conflicts before you commit. |
 | **Dashboard** | `/dashboard` | Priority-sorted feed of saved events, upcoming deadlines, schedule conflicts, and reminders — synced to your Google account via Supabase. |
 | **CampusConnect** | `/campus` | Society collab mesh — college societies post requests (design partners, co-sponsors, hackathon teammates) and discover each other across campuses. |
