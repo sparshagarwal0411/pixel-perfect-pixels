@@ -170,11 +170,10 @@ function EventPage() {
                     store.setStatus(e.id, store.statuses[e.id] === s ? null : s);
                     toast(`Marked ${s}`);
                   }}
-                  className={`rounded-md border px-2 py-1.5 text-xs ${
-                    store.statuses[e.id] === s
+                  className={`rounded-md border px-2 py-1.5 text-xs ${store.statuses[e.id] === s
                       ? "border-primary bg-accent text-accent-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {s}
                 </button>

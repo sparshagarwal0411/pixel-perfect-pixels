@@ -90,7 +90,7 @@ export function GoogleAuthModal() {
             Sign in with Google
           </h2>
           <p className="mt-1 text-xs text-muted-foreground max-w-xs">
-            Connect your student account to AvsarMarg
+            Connect your student account to MargDarshak
           </p>
 
           {/* Supabase Status Pill */}

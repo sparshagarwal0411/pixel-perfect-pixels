@@ -1,4 +1,4 @@
-import { collegeById, type EventItem, type Review } from "./data";
+import { collegeById, type EventItem } from "./data";
 
 export function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
   const R = 6371;
@@ -37,34 +37,11 @@ export function overlaps(a: EventItem, b: EventItem) {
   return new Date(a.start) < new Date(b.end) && new Date(b.start) < new Date(a.end);
 }
 
-export function worthIt(e: EventItem, profile: Profile, userReviews: Review[] = []) {
-  const reviews = [...e.reviews, ...userReviews];
-  const t = travelEstimate(profile.collegeId, e.collegeId);
-  const quality = (e.quality / 5) * 100;
-  const cost = Math.max(0, 100 - ((e.fee + t.cost) / Math.max(profile.budget, 1)) * 100);
-  const travel = Math.max(0, 100 - t.minutes);
-  const matches = e.tags.filter((tag) => profile.interests.includes(tag)).length;
-  const relevance = Math.min(100, matches * 45 + (matches ? 10 : 0));
-  const avg = avgRating(reviews);
-  const community = avg === null ? null : (avg / 5) * 100;
-  const parts = [
-    { key: "Quality", value: quality, weight: 0.25 },
-    { key: "Cost", value: cost, weight: 0.2 },
-    { key: "Travel", value: travel, weight: 0.15 },
-    { key: "Relevance", value: relevance, weight: 0.25 },
-    ...(community === null ? [] : [{ key: "Community", value: community, weight: 0.15 }]),
-  ];
-  const totalW = parts.reduce((s, p) => s + p.weight, 0);
-  const score = Math.round(parts.reduce((s, p) => s + p.value * p.weight, 0) / totalW);
-  return { score, parts, reviewCount: reviews.length, travel: t };
-}
-
 export function priority(e: EventItem, profile: Profile, saved: boolean) {
   const daysLeft = (new Date(e.deadline).getTime() - Date.now()) / 86400000;
   const urgency = daysLeft < 0 ? 0 : Math.max(0, 100 - daysLeft * 12);
-  const w = worthIt(e, profile).score;
   const affordable = e.fee + travelEstimate(profile.collegeId, e.collegeId).cost <= profile.budget;
-  const score = Math.round(urgency * 0.4 + w * 0.5 + (saved ? 10 : 0) - (affordable ? 0 : 20));
+  const score = Math.round(urgency * 0.6 + (saved ? 15 : 0) - (affordable ? 0 : 20));
   return { score, daysLeft, affordable };
 }
 

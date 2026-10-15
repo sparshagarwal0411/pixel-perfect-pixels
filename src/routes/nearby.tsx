@@ -112,11 +112,10 @@ function Nearby() {
             <button
               key={c}
               onClick={() => setCat(c)}
-              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                cat === c
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${cat === c
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
+                }`}
             >
               {c}
             </button>
@@ -163,9 +162,8 @@ function Nearby() {
                   <button
                     key={e.id}
                     onClick={() => setSel(e.id)}
-                    className={`flex w-full items-center justify-between gap-2 p-3 text-left text-xs transition-colors ${
-                      isSelected ? "bg-primary/10 border-l-2 border-primary" : "hover:bg-muted/50"
-                    }`}
+                    className={`flex w-full items-center justify-between gap-2 p-3 text-left text-xs transition-colors ${isSelected ? "bg-primary/10 border-l-2 border-primary" : "hover:bg-muted/50"
+                      }`}
                   >
                     <div className="min-w-0 flex-1">
                       <p

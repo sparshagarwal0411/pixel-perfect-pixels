@@ -47,7 +47,7 @@ SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 USER_AGENT = os.getenv(
     "UNSTOP_USER_AGENT",
-    "AvsarMarg event indexer/1.0 (+https://github.com/sparshagarwal0411/pixel-perfect-pixels)",
+    "MargDarshak event indexer/1.0 (+https://github.com/sparshagarwal0411/pixel-perfect-pixels)",
 )
 
 # Only events with a known campus are published because the map needs a

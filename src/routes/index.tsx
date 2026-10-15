@@ -16,11 +16,11 @@ import { MouseGridHero } from "@/components/MouseGridHero";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AvsarMarg — Delhi-NCR College Hackathons, Fests & Competitions" },
+      { title: "MargDarshak — Delhi-NCR College Hackathons, Fests & Competitions" },
       {
         name: "description",
         content:
-          "Compare college hackathons across DTU, IIT Delhi, NSUT, and IIITD with transparent Worth-It scores and metro transit times.",
+          "Compare college hackathons across DTU, IIT Delhi, NSUT, and IIITD with direct Delhi metro transit times and schedule tracking.",
       },
     ],
   }),
@@ -28,7 +28,10 @@ export const Route = createFileRoute("/")({
 });
 export function LandingPage() {
   const { setAuthModalOpen } = useStore();
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/harsh
   const featuredEvents = useMemo(() => events.slice(0, 3), []);
 
 
@@ -41,7 +44,7 @@ export function LandingPage() {
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            Why students use AvsarMarg
+            Why students use MargDarshak
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             No more registering for events that clash with exams or require 3 hours in cabs for a ₹5k prize pool.
@@ -51,6 +54,19 @@ export function LandingPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-2xl border border-border bg-card p-4.5 space-y-2 hover:border-primary/40 transition-colors">
             <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<<<<<<< HEAD
+=======
+              <Trophy className="size-4.5" />
+            </div>
+            <h3 className="text-sm font-semibold text-foreground">Curated Delhi Circuit</h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Discover verified hackathons, competitions, workshops, and college fests across DTU, IIT Delhi, NSUT, and IIITD.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-4.5 space-y-2 hover:border-primary/40 transition-colors">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+>>>>>>> feature/harsh
               <MapPin className="size-4.5" />
             </div>
             <h3 className="text-sm font-semibold text-foreground">Delhi Metro Transit</h3>
@@ -81,7 +97,11 @@ export function LandingPage() {
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* 4. UPCOMING EVENTS TEASER */}
+=======
+      {/* 3. UPCOMING EVENTS TEASER */}
+>>>>>>> feature/harsh
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -114,6 +134,12 @@ export function LandingPage() {
                     <span className="rounded bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                       {e.category}
                     </span>
+<<<<<<< HEAD
+=======
+                    <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      {clg.short}
+                    </span>
+>>>>>>> feature/harsh
                   </div>
 
                   <h3 className="mt-2 text-sm font-semibold text-foreground line-clamp-1">{e.title}</h3>
@@ -206,7 +232,7 @@ export function LandingPage() {
 
       {/* FOOTER */}
       <footer className="pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-        <span>© 2026 AvsarMarg · Delhi-NCR Inter-College Circuit</span>
+        <span>© 2026 MargDarshak · Delhi-NCR Inter-College Circuit</span>
         <div className="flex gap-4">
           <Link to="/explore" className="hover:text-foreground">Explore</Link>
           <Link to="/nearby" className="hover:text-foreground">Nearby</Link>

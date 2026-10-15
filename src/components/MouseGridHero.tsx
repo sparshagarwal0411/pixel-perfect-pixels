@@ -100,7 +100,11 @@ export function MouseGridHero() {
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
             Compare upcoming hackathons across DTU, IIT Delhi, NSUT, and IIITD. We calculate real metro travel times,
+<<<<<<< HEAD
             clear event details, travel times, and schedule conflict warnings before you register.
+=======
+            transit routes, and flag schedule conflicts before you register.
+>>>>>>> feature/harsh
           </p>
 
           {/* Action Buttons */}
@@ -175,7 +179,10 @@ export function MouseGridHero() {
             <div className="rounded-xl border border-border/80 bg-background/60 p-3.5 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">
-                  Top Recommended Event
+                  Featured Event
+                </span>
+                <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  {topEvent.category}
                 </span>
               </div>
 

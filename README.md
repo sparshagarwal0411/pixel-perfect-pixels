@@ -1,6 +1,6 @@
-# AvsarMarg
+# MargDarshak
 
-> **अवसर मार्ग** — *The path to opportunity.*
+> **मार्गदर्शक** — *Your guide to campus opportunities.*
 
 Discover, compare, and route to inter-college hackathons, fests, workshops, and competitions across Delhi-NCR — all in one place.
 
@@ -8,15 +8,21 @@ Discover, compare, and route to inter-college hackathons, fests, workshops, and 
 
 ## What it does
 
-AvsarMarg solves a real problem for college students in Delhi: finding out *which* events are worth the trip. It pulls events from Unstop and local listings, then layers on transparent scoring, travel estimates, and schedule-conflict detection so you can make smarter decisions.
+MargDarshak solves a real problem for college students in Delhi: finding out the best competitions, fests, and hackathons without transit chaos. It pulls events from Unstop and local listings, then layers on travel estimates, schedule-conflict detection, and campus matching so you can make smarter decisions.
 
 ### Core features
 
 | Feature | Route | Description |
 |---|---|---|
+<<<<<<< HEAD
 | **Landing & Algorithm Sandbox** | `/` | Intractive Worth-It Score simulator — drag sliders for prize, distance, fee and interest match to see how the ranking formula works in real time. |
 | **Explore** | `/explore` | Search, filter (category, college, fee range), and compare events side-by-side with scores and reviews. |
 | **EventRank** | `/rank` | Every event gets a transparent **Worth-It Score** (0–100) built from quality, cost, travel time, tag relevance, and community reviews. No black boxes. |
+=======
+| **Landing & Interactive Hero** | `/` | Delhi-NCR college hackathon explorer with live transit estimates and campus selection. |
+| **Explore** | `/explore` | Search, filter (category, college, fee range), and compare events side-by-side with ratings and reviews. |
+| **EventRank** | `/rank` | Personalized match ranking built from student interests, transit proximity, and community reviews. |
+>>>>>>> feature/harsh
 | **Transit Radar** | `/nearby` | Leaflet map with campus pins, straight-line distance + estimated metro/auto travel time and cost. "Can I Make It?" widget checks timing, budget, and schedule conflicts before you commit. |
 | **Dashboard** | `/dashboard` | Priority-sorted feed of saved events, upcoming deadlines, schedule conflicts, and reminders — synced to your Google account via Supabase. |
 | **CampusConnect** | `/campus` | Society collab mesh — college societies post requests (design partners, co-sponsors, hackathon teammates) and discover each other across campuses. |
@@ -25,7 +31,7 @@ AvsarMarg solves a real problem for college students in Delhi: finding out *whic
 
 ### Under the hood
 
-- **Worth-It Score** — weighted formula across 5 axes: organizer quality, total cost (fee + travel), travel time, interest-tag relevance, community reviews. Weights are visible, not hidden.
+- **Match & Priority Scoring** — weighted formula based on student interests, deadline urgency, affordability, and transit proximity.
 - **"Can I Make It?"** — given your campus, leave time, budget, and existing registrations, tells you if an event is feasible (timing + budget + no schedule clash + deadline still open).
 - **Unstop sync** — Python scraper hits Unstop's public opportunity API, filters for Delhi-NCR events with known campus coordinates, and upserts into Supabase.
 - **Google OAuth** — real Supabase auth with Google provider. Falls back to local demo accounts when Supabase isn't configured.
@@ -108,7 +114,7 @@ UNSTOP_LISTINGS_URL=https://unstop.com/competitions
 
 The sync reads Unstop's public opportunity JSON endpoint, publishes only events whose Delhi-NCR location matches a known campus, and reports fetched vs skipped counts. Control volume with `UNSTOP_MAX_API_PAGES` and `UNSTOP_API_PAGE_SIZE` env vars.
 
-> **Note:** `Registered` in AvsarMarg means the user bookmarked the event locally — it does **not** mean they completed registration on Unstop.
+> **Note:** `Registered` in MargDarshak means the user bookmarked the event locally — it does **not** mean they completed registration on Unstop.
 
 ---
 
@@ -141,7 +147,7 @@ src/
 │   └── ui/                   # shadcn/ui primitives
 ├── lib/
 │   ├── data.ts               # Types + demo seed data
-│   ├── logic.ts              # Worth-It Score, travel estimates, Can-I-Make-It
+│   ├── logic.ts              # Travel estimates, Priority score, Can-I-Make-It
 │   ├── remote-events.ts      # Supabase event loader
 │   ├── store.tsx             # React context state + Supabase auth
 │   ├── supabase.ts           # Supabase client init

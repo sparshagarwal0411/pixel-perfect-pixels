@@ -10,7 +10,7 @@ import { EventCard } from "@/components/EventCard";
 export const Route = createFileRoute("/explore")({
   head: () => ({
     meta: [
-      { title: "Explore events — AvsarMarg" },
+      { title: "Explore events — MargDarshak" },
       { name: "description", content: "Search hackathons, workshops, fests and conferences across colleges and compare them side by side." },
       { property: "og:title", content: "Explore inter-college events" },
       { property: "og:description", content: "Search, filter and compare events across campuses." },
@@ -41,10 +41,14 @@ function Explore() {
     );
     return out.sort((a, b) =>
       sort === "date" ? +new Date(a.start) - +new Date(b.start)
+<<<<<<< HEAD
       : sort === "fee" ? a.fee - b.fee
       : 0,
+=======
+      : a.fee - b.fee
+>>>>>>> feature/harsh
     );
-  }, [q, cat, college, freeOnly, sort, profile, userReviews]);
+  }, [q, cat, college, freeOnly, sort, events]);
 
   const toggle = (id: string) => setCompare((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= 3 ? c : [...c, id]));
   const cmp = compare.map((id) => events.find((e) => e.id === id)!);

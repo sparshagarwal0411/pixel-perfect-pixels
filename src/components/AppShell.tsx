@@ -49,7 +49,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-semibold tracking-tight text-foreground block leading-tight">
-                AvsarMarg
+                MargDarshak
               </span>
               <span className="rounded bg-muted px-1 py-0.2 font-mono text-[9px] text-muted-foreground">
                 NCR
@@ -104,11 +104,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               key={n.to}
               to={n.to}
               onClick={() => setOpen(false)}
-              className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                active
+              className={`flex items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${active
                   ? "bg-primary text-primary-foreground font-semibold"
                   : "text-sidebar-foreground hover:bg-sidebar-accent/70 hover:text-foreground"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <n.icon className={`size-3.5 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
@@ -228,9 +227,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground hidden sm:inline">AvsarMarg ·</span>
+              <span className="text-xs text-muted-foreground hidden sm:inline">MargDarshak ·</span>
               <span className="font-semibold text-foreground text-xs sm:text-sm tracking-tight">
-                {navItems.find((n) => (n.to === "/" ? loc.pathname === "/" : loc.pathname.startsWith(n.to)))?.label || "AvsarMarg"}
+                {navItems.find((n) => (n.to === "/" ? loc.pathname === "/" : loc.pathname.startsWith(n.to)))?.label || "MargDarshak"}
               </span>
             </div>
           </div>
@@ -342,6 +341,6 @@ export function ScoreRing({ score, size = 44 }: { score: number; size?: number }
 
 export const DemoNote = () => (
   <p className="mt-8 text-center text-xs text-muted-foreground">
-    AvsarMarg Delhi-NCR · Travel times estimated via Delhi Metro network lines.
+    MargDarshak Delhi-NCR · Travel times estimated via Delhi Metro network lines.
   </p>
 );
