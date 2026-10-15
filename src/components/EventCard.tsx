@@ -7,11 +7,14 @@ import { useStore } from "@/lib/store";
 import { Chip } from "./AppShell";
 
 export function EventCard({ e, compareSelected, onCompare }: { e: EventItem; compareSelected?: boolean; onCompare?: () => void }) {
-  const allReviews = [...e.reviews, ...(userReviews[e.id] ?? [])];
+  const { saved = [], toggleSave, userReviews = {}, statuses = {}, setStatus } = useStore();
+  const eventReviews = Array.isArray(e.reviews) ? e.reviews : [];
+  const myReviews = Array.isArray(userReviews?.[e.id]) ? userReviews[e.id] : [];
+  const allReviews = [...eventReviews, ...myReviews];
   const avg = avgRating(allReviews);
-  const isSaved = saved.includes(e.id);
-  const isRegistered = statuses[e.id] === "Registered";
-  const isAttended = statuses[e.id] === "Attended";
+  const isSaved = Boolean(saved?.includes(e.id));
+  const isRegistered = statuses?.[e.id] === "Registered";
+  const isAttended = statuses?.[e.id] === "Attended";
 
   const handleRegisterToggle = (checked: boolean) => {
     if (checked) {

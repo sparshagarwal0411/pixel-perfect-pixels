@@ -373,6 +373,24 @@ export const seedRequests: CollabRequest[] = [
   },
 ];
 
-export const collegeById = (id: string) => colleges.find((c) => c.id === id)!;
+const defaultCollege: College = {
+  id: "delhi",
+  name: "Delhi-NCR Campus",
+  short: "NCR",
+  lat: 28.6139,
+  lng: 77.209,
+  metro: "Delhi Metro",
+};
+
+export const collegeById = (id?: string): College => {
+  if (!id) return colleges[0] || defaultCollege;
+  return (
+    colleges.find((c) => c.id.toLowerCase() === id.toLowerCase()) || {
+      ...defaultCollege,
+      id,
+      short: id.toUpperCase().slice(0, 6),
+    }
+  );
+};
 export const eventById = (id: string) => events.find((e) => e.id === id);
 export const societyById = (id: string) => societies.find((s) => s.id === id);

@@ -1,6 +1,10 @@
-import { collegeById, type EventItem } from "./data";
+import { collegeById, type EventItem, type Review } from "./data";
 
-export function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+export function haversineKm(
+  a?: { lat: number; lng: number } | null,
+  b?: { lat: number; lng: number } | null,
+) {
+  if (!a || !b || typeof a.lat !== "number" || typeof b.lat !== "number") return 15;
   const R = 6371;
   const dLat = ((b.lat - a.lat) * Math.PI) / 180;
   const dLng = ((b.lng - a.lng) * Math.PI) / 180;
@@ -14,16 +18,18 @@ export const formatDistance = (km: number) =>
   km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 
 /** Rough estimate only — straight-line distance × 1.35 road factor, ~22 km/h city average. Not a live route. */
-export function travelEstimate(fromId: string, toId: string) {
-  if (fromId === toId) return { km: 0, minutes: 5, cost: 0 };
-  const km = haversineKm(collegeById(fromId), collegeById(toId)) * 1.35;
-  const minutes = Math.round((km / 22) * 60 + 10);
-  const cost = Math.round(20 + km * 2.5); // metro/auto mix, two ways ×2 below
-  return { km: Math.round(km * 10) / 10, minutes, cost: cost * 2 };
+export function travelEstimate(fromId?: string, toId?: string) {
+  if (!fromId || !toId || fromId === toId) return { km: 0, minutes: 5, cost: 0 };
+  const from = collegeById(fromId);
+  const to = collegeById(toId);
+  const km = haversineKm(from, to) * 1.35;
+  const minutes = Math.max(5, Math.round((km / 22) * 60 + 10));
+  const cost = Math.max(10, Math.round(20 + km * 2.5) * 2);
+  return { km: Math.round(km * 10) / 10, minutes, cost };
 }
 
-export const avgRating = (reviews: Review[]) =>
-  reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : null;
+export const avgRating = (reviews?: Review[] | null) =>
+  reviews && reviews.length ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length : null;
 
 export interface Profile {
   name: string;

@@ -24,7 +24,7 @@ export const Route = createFileRoute("/explore")({
 const cats: (Category | "All")[] = ["All", "Hackathon", "Workshop", "Competition", "Conference", "Fest"];
 
 function Explore() {
-  const { events, profile, userReviews } = useStore();
+  const { events = [], profile, userReviews = {} } = useStore();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<Category | "All">("All");
   const [college, setCollege] = useState("all");
@@ -33,20 +33,29 @@ function Explore() {
   const [compare, setCompare] = useState<string[]>([]);
 
   const list = useMemo(() => {
-    const out = events.filter((e) =>
-      (cat === "All" || e.category === cat) &&
-      (college === "all" || e.collegeId === college) &&
-      (!freeOnly || e.fee === 0) &&
-      (q === "" || [e.title, e.organizer, ...e.tags].join(" ").toLowerCase().includes(q.toLowerCase())),
-    );
+    const out = (events || []).filter((e) => {
+      if (!e) return false;
+      const matchesCat = cat === "All" || e.category === cat;
+      const matchesCollege = college === "all" || e.collegeId === college;
+      const matchesFree = !freeOnly || e.fee === 0;
+      const tags = Array.isArray(e.tags) ? e.tags : [];
+      const searchText = [e.title || "", e.organizer || "", ...tags].join(" ").toLowerCase();
+      const matchesQ = q === "" || searchText.includes(q.toLowerCase().trim());
+      return matchesCat && matchesCollege && matchesFree && matchesQ;
+    });
+
     return out.sort((a, b) =>
-      sort === "date" ? +new Date(a.start) - +new Date(b.start)
-      : a.fee - b.fee
+      sort === "date"
+        ? +new Date(a.start || 0) - +new Date(b.start || 0)
+        : (a.fee ?? 0) - (b.fee ?? 0)
     );
   }, [q, cat, college, freeOnly, sort, events]);
 
-  const toggle = (id: string) => setCompare((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= 3 ? c : [...c, id]));
-  const cmp = compare.map((id) => events.find((e) => e.id === id)!);
+  const toggle = (id: string) =>
+    setCompare((c) => (c.includes(id) ? c.filter((x) => x !== id) : c.length >= 3 ? c : [...c, id]));
+  const cmp = compare
+    .map((id) => (events || []).find((e) => e.id === id))
+    .filter((e): e is NonNullable<typeof e> => Boolean(e));
 
   return (
     <>
@@ -90,8 +99,8 @@ function Explore() {
                 ["Where", (e: typeof cmp[0]) => collegeById(e.collegeId).short],
                 ["Date", (e: typeof cmp[0]) => fmtDate(e.start)],
                 ["Fee", (e: typeof cmp[0]) => fmtMoney(e.fee)],
-                ["Travel (est.)", (e: typeof cmp[0]) => { const t = travelEstimate(profile.collegeId, e.collegeId); return `${t.minutes} min · ₹${t.cost}`; }],
-                ["Rating", (e: typeof cmp[0]) => avgRating([...e.reviews, ...(userReviews[e.id] ?? [])])?.toFixed(1) ?? "—"],
+                ["Travel (est.)", (e: typeof cmp[0]) => { const t = travelEstimate(profile?.collegeId, e.collegeId); return `${t.minutes} min · ₹${t.cost}`; }],
+                ["Rating", (e: typeof cmp[0]) => avgRating([...(e.reviews || []), ...(userReviews?.[e.id] ?? [])])?.toFixed(1) ?? "—"],
               ].map(([label, fn]) => (
                 <tr key={label as string} className="border-t">
                   <td className="py-2 pr-4 text-xs text-muted-foreground">{label as string}</td>
