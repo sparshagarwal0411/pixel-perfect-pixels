@@ -90,7 +90,7 @@ const initial: State = {
     goals: "Win a hackathon this semester",
   },
   saved: ["e1", "e5"],
-  statuses: { e1: "Registered" },
+  statuses: { e1: "Registered", e_past1: "Attended", e_past2: "Attended" },
   reminders: ["e1"],
   userReviews: {},
   requests: seedRequests,
@@ -126,6 +126,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setState((prev) => ({
           ...prev,
           ...parsed,
+          statuses: {
+            ...initial.statuses,
+            ...(parsed.statuses || {}),
+          },
           authModalOpen: false,
           isRealSupabase: isSupabaseConfigured,
         }));

@@ -7,6 +7,7 @@ export interface College {
   short: string;
   lat: number;
   lng: number;
+  metro: string;
 }
 
 export interface Review {
@@ -55,20 +56,21 @@ export interface CollabRequest {
 }
 
 export const colleges: College[] = [
-  { id: "iitd", name: "IIT Delhi", short: "IITD", lat: 28.545, lng: 77.1926 },
-  { id: "dtu", name: "Delhi Technological University", short: "DTU", lat: 28.7499, lng: 77.1183 },
+  { id: "iitd", name: "IIT Delhi", short: "IITD", lat: 28.545, lng: 77.1926, metro: "IIT Delhi (Magenta Line)" },
+  { id: "dtu", name: "Delhi Technological University", short: "DTU", lat: 28.7499, lng: 77.1183, metro: "Samaypur Badli (Yellow Line)" },
   {
     id: "nsut",
     name: "Netaji Subhas Univ. of Technology",
     short: "NSUT",
     lat: 28.6096,
     lng: 77.0369,
+    metro: "Dwarka Mor (Blue Line)",
   },
-  { id: "iiitd", name: "IIIT Delhi", short: "IIITD", lat: 28.5459, lng: 77.2732 },
-  { id: "jmi", name: "Jamia Millia Islamia", short: "JMI", lat: 28.5616, lng: 77.2802 },
-  { id: "du", name: "University of Delhi (North)", short: "DU", lat: 28.6889, lng: 77.2091 },
-  { id: "amity", name: "Amity University, Noida", short: "Amity", lat: 28.5442, lng: 77.3332 },
-  { id: "bpit", name: "Bharati Vidyapeeth (BVCOE)", short: "BVCOE", lat: 28.6764, lng: 77.1197 },
+  { id: "iiitd", name: "IIIT Delhi", short: "IIITD", lat: 28.5459, lng: 77.2732, metro: "Govind Puri / Okhla NSIC (Violet Line)" },
+  { id: "jmi", name: "Jamia Millia Islamia", short: "JMI", lat: 28.5616, lng: 77.2802, metro: "Jamia Millia Islamia (Magenta Line)" },
+  { id: "du", name: "University of Delhi (North)", short: "DU", lat: 28.6889, lng: 77.2091, metro: "Vishwavidyalaya (Yellow Line)" },
+  { id: "amity", name: "Amity University, Noida", short: "Amity", lat: 28.5442, lng: 77.3332, metro: "Okhla Bird Sanctuary (Magenta Line)" },
+  { id: "bpit", name: "Bharati Vidyapeeth (BVCOE)", short: "BVCOE", lat: 28.6764, lng: 77.1197, metro: "Paschim Vihar East (Green Line)" },
 ];
 
 const d = (days: number, hour = 10) => {
@@ -86,6 +88,64 @@ const r = (author: string, rating: number, text: string): Review => ({
 });
 
 export const events: EventItem[] = [
+  {
+    id: "e_past1",
+    title: "DTU Vihaan 007 Hackathon",
+    category: "Hackathon",
+    collegeId: "dtu",
+    organizer: "IEEE DTU",
+    start: d(-25, 9),
+    end: d(-23, 18),
+    deadline: d(-30),
+    fee: 0,
+    eligibility: "UG/PG students, teams of 2–4",
+    tags: ["AI", "Web3", "Open Innovation"],
+    description: "Annual 36-hour flagship hackathon across Delhi-NCR with 600+ builders. Built an automated disaster relief routing system.",
+    quality: 4.8,
+    prize: "₹1.5L First Runner Up 🥈",
+    reviews: [
+      r("Aarav (sample)", 5, "Incredible energy and midnight mentorship."),
+      r("Sparsh", 5, "Won 2nd place in Open Innovation track!"),
+    ],
+  },
+  {
+    id: "e_past2",
+    title: "IIITD Apex Algorithm Duel",
+    category: "Competition",
+    collegeId: "iiitd",
+    organizer: "Foobar CS Society IIITD",
+    start: d(-14, 14),
+    end: d(-14, 18),
+    deadline: d(-18),
+    fee: 100,
+    eligibility: "Solo or Teams of 2",
+    tags: ["Algorithms", "CP", "Systems"],
+    description: "High-intensity speed programming contest tackling distributed graph problems under strict memory limits.",
+    quality: 4.5,
+    prize: "Rank #4 Finalist 🎖️",
+    reviews: [
+      r("Kabir (sample)", 4, "Challenging graph theory problems."),
+    ],
+  },
+  {
+    id: "e_past3",
+    title: "HackNSUT Winter Edition",
+    category: "Hackathon",
+    collegeId: "nsut",
+    organizer: "Crosslinks NSUT",
+    start: d(-42, 10),
+    end: d(-40, 17),
+    deadline: d(-48),
+    fee: 0,
+    eligibility: "Open to all students",
+    tags: ["AI", "Civic Tech", "Mobile"],
+    description: "48-hour builder marathon focusing on student civic tech and public transport solutions.",
+    quality: 4.6,
+    prize: "Best UI/UX Award 🏆",
+    reviews: [
+      r("Priya", 5, "Great mentors and smooth judging process."),
+    ],
+  },
   {
     id: "e1",
     title: "HackDelhi 36",
