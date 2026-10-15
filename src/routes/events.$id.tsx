@@ -3,9 +3,9 @@ import { ArrowLeft, Bell, Bookmark, CheckCircle2, MapPin, Star } from "lucide-re
 import { useState } from "react";
 import { toast } from "sonner";
 import { collegeById } from "@/lib/data";
-import { avgRating, fmtDate, fmtMoney, fmtTime, worthIt } from "@/lib/logic";
+import { avgRating, fmtDate, fmtMoney, fmtTime } from "@/lib/logic";
 import { useStore, type Status } from "@/lib/store";
-import { Chip, ScoreRing } from "@/components/AppShell";
+import { Chip } from "@/components/AppShell";
 import { CanIMakeIt } from "@/components/CanIMakeIt";
 import { EventRouteMap } from "@/components/EventRouteMap";
 
@@ -34,7 +34,6 @@ function EventPage() {
   }
   const mine = store.userReviews[e.id] ?? [];
   const all = [...e.reviews, ...mine];
-  const w = worthIt(e, store.profile, mine);
   const avg = avgRating(all);
   const [rating, setRating] = useState(5);
   const [text, setText] = useState("");
@@ -147,19 +146,6 @@ function EventPage() {
         </div>
 
         <aside className="space-y-4">
-          <div className="card-surface p-4">
-            <div className="flex items-center gap-3"><ScoreRing score={w.score} size={56} /><div><p className="font-medium">Worth-It Score</p><p className="text-xs text-muted-foreground">For you, from {collegeById(store.profile.collegeId).short}</p></div></div>
-            <div className="mt-4 space-y-2">
-              {w.parts.map((p) => (
-                <div key={p.key}>
-                  <div className="flex justify-between text-xs"><span className="text-muted-foreground">{p.key} · {Math.round(p.weight * 100)}%</span><span className="font-mono">{Math.round(p.value)}</span></div>
-                  <div className="mt-1 h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${p.value}%` }} /></div>
-                </div>
-              ))}
-            </div>
-            {w.parts.length === 4 && <p className="mt-3 text-[11px] text-muted-foreground">No community reviews yet — excluded rather than guessed.</p>}
-          </div>
-
           <div className="card-surface space-y-3 p-4">
             <p className="text-xs text-muted-foreground">Track this event</p>
 

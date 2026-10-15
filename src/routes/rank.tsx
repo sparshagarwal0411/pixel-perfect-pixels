@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { collegeById } from "@/lib/data";
-import { worthIt } from "@/lib/logic";
+import { fmtDate } from "@/lib/logic";
 import { useStore } from "@/lib/store";
-import { DemoNote, PageHeader, ScoreRing } from "@/components/AppShell";
+import { DemoNote, PageHeader } from "@/components/AppShell";
 import { AuthGate } from "@/components/AuthGate";
 
 export const Route = createFileRoute("/rank")({
@@ -31,12 +31,12 @@ function RankRouteComponent() {
 }
 
 function Rank() {
-  const { events, profile, userReviews, set } = useStore();
-  const ranked = events.map((e) => ({ e, w: worthIt(e, profile, userReviews[e.id]) })).sort((a, b) => b.w.score - a.w.score);
+  const { events, profile, set } = useStore();
+  const ranked = [...events].sort((a, b) => +new Date(a.start) - +new Date(b.start));
   const allTags = Array.from(new Set(events.flatMap((e) => e.tags)));
   return (
     <>
-      <PageHeader title="EventRank" subtitle="Every score is explainable. Change your interests to see rankings update." />
+      <PageHeader title="Upcoming events" subtitle="Browse synced competitions and opportunities by date." />
       <div className="mb-6 card-surface p-4">
         <p className="mb-2 text-xs text-muted-foreground">Your interests (drive the Relevance factor)</p>
         <div className="flex flex-wrap gap-1.5">
@@ -45,24 +45,15 @@ function Rank() {
             return <button key={t} onClick={() => set((s) => ({ ...s, profile: { ...s.profile, interests: on ? s.profile.interests.filter((x) => x !== t) : [...s.profile.interests, t] } }))} className={`rounded-full border px-2.5 py-0.5 text-xs ${on ? "border-primary bg-accent text-accent-foreground" : "text-muted-foreground"}`}>{t}</button>;
           })}
         </div>
-        <p className="mt-3 text-[11px] text-muted-foreground">Weights: Quality 25% · Relevance 25% · Cost 20% · Travel 15% · Community 15% (dropped and re-weighted when an event has no reviews).</p>
+        <p className="mt-3 text-[11px] text-muted-foreground">Use your interests to keep event recommendations relevant.</p>
       </div>
       <div className="space-y-2">
-        {ranked.map(({ e, w }, i) => (
+        {ranked.map((e, i) => (
           <Link key={e.id} to="/events/$id" params={{ id: e.id }} className="card-surface flex items-center gap-4 p-3 hover:border-primary/40 fade-up">
             <span className="w-6 text-center font-mono text-sm text-muted-foreground">{i + 1}</span>
-            <ScoreRing score={w.score} />
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium">{e.title}</p>
-              <p className="text-xs text-muted-foreground">{collegeById(e.collegeId).short} · {w.reviewCount} review{w.reviewCount === 1 ? "" : "s"}</p>
-            </div>
-            <div className="hidden gap-3 md:flex">
-              {w.parts.map((p) => (
-                <div key={p.key} className="w-16">
-                  <p className="text-[10px] text-muted-foreground">{p.key}</p>
-                  <div className="mt-1 h-1 rounded-full bg-muted"><div className="h-full rounded-full bg-primary" style={{ width: `${p.value}%` }} /></div>
-                </div>
-              ))}
+              <p className="text-xs text-muted-foreground">{collegeById(e.collegeId).short} · {fmtDate(e.start)}</p>
             </div>
           </Link>
         ))}

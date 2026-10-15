@@ -14,7 +14,7 @@ MargDarshak solves a real problem for college students in Delhi: finding out *wh
 
 | Feature | Route | Description |
 |---|---|---|
-| **Landing & Algorithm Sandbox** | `/` | Interactive Worth-It Score simulator — drag sliders for prize, distance, fee and interest match to see how the ranking formula works in real time. |
+| **Landing & Algorithm Sandbox** | `/` | Intractive Worth-It Score simulator — drag sliders for prize, distance, fee and interest match to see how the ranking formula works in real time. |
 | **Explore** | `/explore` | Search, filter (category, college, fee range), and compare events side-by-side with scores and reviews. |
 | **EventRank** | `/rank` | Every event gets a transparent **Worth-It Score** (0–100) built from quality, cost, travel time, tag relevance, and community reviews. No black boxes. |
 | **Transit Radar** | `/nearby` | Leaflet map with campus pins, straight-line distance + estimated metro/auto travel time and cost. "Can I Make It?" widget checks timing, budget, and schedule conflicts before you commit. |

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { colleges, collegeById, type Category } from "@/lib/data";
-import { avgRating, fmtDate, fmtMoney, worthIt } from "@/lib/logic";
+import { avgRating, fmtDate, fmtMoney, travelEstimate } from "@/lib/logic";
 import { useStore } from "@/lib/store";
 import { DemoNote, PageHeader } from "@/components/AppShell";
 import { EventCard } from "@/components/EventCard";
@@ -29,7 +29,7 @@ function Explore() {
   const [cat, setCat] = useState<Category | "All">("All");
   const [college, setCollege] = useState("all");
   const [freeOnly, setFreeOnly] = useState(false);
-  const [sort, setSort] = useState<"date" | "worth" | "fee">("worth");
+  const [sort, setSort] = useState<"date" | "fee">("date");
   const [compare, setCompare] = useState<string[]>([]);
 
   const list = useMemo(() => {
@@ -42,7 +42,7 @@ function Explore() {
     return out.sort((a, b) =>
       sort === "date" ? +new Date(a.start) - +new Date(b.start)
       : sort === "fee" ? a.fee - b.fee
-      : worthIt(b, profile, userReviews[b.id]).score - worthIt(a, profile, userReviews[a.id]).score,
+      : 0,
     );
   }, [q, cat, college, freeOnly, sort, profile, userReviews]);
 
@@ -67,7 +67,6 @@ function Explore() {
           </select>
           <label className="flex items-center gap-1.5 text-xs text-muted-foreground"><input type="checkbox" checked={freeOnly} onChange={(e) => setFreeOnly(e.target.checked)} className="accent-primary" /> Free only</label>
           <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="ml-auto rounded-md border border-input bg-card px-2 py-1 text-xs">
-            <option value="worth">Sort: Worth-It</option>
             <option value="date">Sort: Date</option>
             <option value="fee">Sort: Fee</option>
           </select>
@@ -92,9 +91,8 @@ function Explore() {
                 ["Where", (e: typeof cmp[0]) => collegeById(e.collegeId).short],
                 ["Date", (e: typeof cmp[0]) => fmtDate(e.start)],
                 ["Fee", (e: typeof cmp[0]) => fmtMoney(e.fee)],
-                ["Travel (est.)", (e: typeof cmp[0]) => { const t = worthIt(e, profile).travel; return `${t.minutes} min · ₹${t.cost}`; }],
+                ["Travel (est.)", (e: typeof cmp[0]) => { const t = travelEstimate(profile.collegeId, e.collegeId); return `${t.minutes} min · ₹${t.cost}`; }],
                 ["Rating", (e: typeof cmp[0]) => avgRating([...e.reviews, ...(userReviews[e.id] ?? [])])?.toFixed(1) ?? "—"],
-                ["Worth-It", (e: typeof cmp[0]) => <span className="font-mono text-primary">{worthIt(e, profile, userReviews[e.id]).score}</span>],
               ].map(([label, fn]) => (
                 <tr key={label as string} className="border-t">
                   <td className="py-2 pr-4 text-xs text-muted-foreground">{label as string}</td>
