@@ -14,8 +14,7 @@ import {
 import { GoogleLogo } from "./GoogleAuthModal";
 import { colleges, collegeById, events } from "@/lib/data";
 import { useStore } from "@/lib/store";
-import { worthIt, fmtDate, fmtMoney } from "@/lib/logic";
-import { ScoreRing } from "./AppShell";
+import { travelEstimate, fmtDate, fmtMoney } from "@/lib/logic";
 
 export function MouseGridHero() {
   const { profile, setAuthModalOpen } = useStore();
@@ -57,7 +56,7 @@ export function MouseGridHero() {
   // Compute a highlight event for this campus
   const topEvent = events.find((e) => e.collegeId !== selectedCampus) || events[0];
   const eventCollege = collegeById(topEvent.collegeId);
-  const scoreData = worthIt(topEvent, { ...profile, collegeId: selectedCampus });
+  const travel = travelEstimate(selectedCampus, topEvent.collegeId);
 
   return (
     <section
@@ -101,7 +100,7 @@ export function MouseGridHero() {
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">
             Compare upcoming hackathons across DTU, IIT Delhi, NSUT, and IIITD. We calculate real metro travel times,
-            honest prize-to-commute scores, and flag schedule conflicts before you register.
+            clear event details, travel times, and schedule conflict warnings before you register.
           </p>
 
           {/* Action Buttons */}
@@ -178,10 +177,6 @@ export function MouseGridHero() {
                 <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">
                   Top Recommended Event
                 </span>
-                <div className="flex items-center gap-1">
-                  <span className="text-xs font-semibold text-primary font-mono">{scoreData.score}/100</span>
-                  <span className="text-[10px] text-muted-foreground">Worth-It</span>
-                </div>
               </div>
 
               <div>
@@ -195,11 +190,11 @@ export function MouseGridHero() {
               <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border/60">
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Clock className="size-3.5 text-primary" />
-                  <span>{scoreData.travel.minutes} min metro</span>
+                  <span>{travel.minutes} min metro</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <MapPin className="size-3.5 text-primary" />
-                  <span>₹{scoreData.travel.cost} est. fare</span>
+                  <span>₹{travel.cost} est. fare</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-muted-foreground">
                   <Calendar className="size-3.5 text-primary" />
