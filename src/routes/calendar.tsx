@@ -53,14 +53,7 @@ export const Route = createFileRoute("/calendar")({
 });
 
 function CalendarRouteComponent() {
-  return (
-    <AuthGate
-      featureName="Personal Calendar & Hack Your Month Edition"
-      description="Sign in with your Google student account to access your personal event tracker, deadline reminders, and synchronized academic schedule."
-    >
-      <CalendarPage />
-    </AuthGate>
-  );
+  return <CalendarPage />;
 }
 
 interface HackEventInfo {
