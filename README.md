@@ -1,6 +1,6 @@
-# AvsarMarg
+# MargDarshak
 
-> **अवसर मार्ग** — *The path to opportunity.*
+> **मार्गदर्शक** — *Your guide to campus opportunities.*
 
 Discover, compare, and route to inter-college hackathons, fests, workshops, and competitions across Delhi-NCR — all in one place.
 
@@ -8,7 +8,7 @@ Discover, compare, and route to inter-college hackathons, fests, workshops, and 
 
 ## What it does
 
-AvsarMarg solves a real problem for college students in Delhi: finding out *which* events are worth the trip. It pulls events from Unstop and local listings, then layers on transparent scoring, travel estimates, and schedule-conflict detection so you can make smarter decisions.
+MargDarshak solves a real problem for college students in Delhi: finding out *which* events are worth the trip. It pulls events from Unstop and local listings, then layers on transparent scoring, travel estimates, and schedule-conflict detection so you can make smarter decisions.
 
 ### Core features
 
@@ -108,7 +108,7 @@ UNSTOP_LISTINGS_URL=https://unstop.com/competitions
 
 The sync reads Unstop's public opportunity JSON endpoint, publishes only events whose Delhi-NCR location matches a known campus, and reports fetched vs skipped counts. Control volume with `UNSTOP_MAX_API_PAGES` and `UNSTOP_API_PAGE_SIZE` env vars.
 
-> **Note:** `Registered` in AvsarMarg means the user bookmarked the event locally — it does **not** mean they completed registration on Unstop.
+> **Note:** `Registered` in MargDarshak means the user bookmarked the event locally — it does **not** mean they completed registration on Unstop.
 
 ---
 

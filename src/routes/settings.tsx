@@ -7,8 +7,8 @@ import { useStore } from "@/lib/store";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Profile settings — AvsarMarg" },
-      { name: "description", content: "Update your AvsarMarg profile and event preferences." },
+      { title: "Profile settings — MargDarshak" },
+      { name: "description", content: "Update your MargDarshak profile and event preferences." },
     ],
   }),
   component: SettingsRoute,

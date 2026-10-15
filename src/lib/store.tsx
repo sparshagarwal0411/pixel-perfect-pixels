@@ -111,7 +111,8 @@ interface Ctx extends State {
 }
 
 const StoreCtx = createContext<Ctx | null>(null);
-const KEY = "AvsarMarg:v2";
+const KEY = "MargDarshak:v2";
+const LEGACY_KEY = "AvsarMarg:v2";
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(initial);
@@ -120,7 +121,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // 1. Load persisted state or active Supabase session
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(KEY);
+      const raw = localStorage.getItem(KEY) || localStorage.getItem(LEGACY_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
         setState((prev) => ({

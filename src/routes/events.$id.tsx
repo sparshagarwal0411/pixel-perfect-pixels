@@ -13,7 +13,7 @@ export const Route = createFileRoute("/events/$id")({
   loader: ({ params }) => ({ id: params.id }),
   head: ({ loaderData }) => ({
     meta: [
-      { title: "Event — AvsarMarg" },
+      { title: "Event — MargDarshak" },
       { name: "description", content: "Event details, venue directions and transit route map." },
       { property: "og:title", content: "Event & Route Map" },
       { property: "og:description", content: "Event details and campus transit map" },

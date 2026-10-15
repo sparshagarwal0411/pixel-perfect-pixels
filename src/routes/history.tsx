@@ -7,8 +7,8 @@ import { useStore, type Status } from "@/lib/store";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "Competition history — AvsarMarg" },
-      { name: "description", content: "Review competitions and events you enrolled in on AvsarMarg." },
+      { title: "Competition history — MargDarshak" },
+      { name: "description", content: "Review competitions and events you enrolled in on MargDarshak." },
     ],
   }),
   component: HistoryRoute,

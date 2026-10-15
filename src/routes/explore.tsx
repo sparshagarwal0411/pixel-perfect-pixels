@@ -10,7 +10,7 @@ import { EventCard } from "@/components/EventCard";
 export const Route = createFileRoute("/explore")({
   head: () => ({
     meta: [
-      { title: "Explore events — AvsarMarg" },
+      { title: "Explore events — MargDarshak" },
       { name: "description", content: "Search hackathons, workshops, fests and conferences across colleges and compare them side by side." },
       { property: "og:title", content: "Explore inter-college events" },
       { property: "og:description", content: "Search, filter and compare events across campuses." },

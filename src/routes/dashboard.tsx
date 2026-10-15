@@ -24,9 +24,9 @@ import { GoogleLogo } from "@/components/GoogleAuthModal";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — AvsarMarg" },
+      { title: "Dashboard — MargDarshak" },
       { name: "description", content: "Your registered competitions, past events attended, deadlines, and transit telemetry in one place." },
-      { property: "og:title", content: "AvsarMarg Dashboard" },
+      { property: "og:title", content: "MargDarshak Dashboard" },
       { property: "og:description", content: "Your registered competitions and campus track record." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -13,7 +13,7 @@ const DELHI_CENTER = { lat: 28.6139, lng: 77.209 };
 export const Route = createFileRoute("/nearby")({
   head: () => ({
     meta: [
-      { title: "Transit Radar & Map — AvsarMarg" },
+      { title: "Transit Radar & Map — MargDarshak" },
       {
         name: "description",
         content:
@@ -39,6 +39,7 @@ function Nearby() {
   const { events, profile } = useStore();
   const [sel, setSel] = useState<string>(events[0]?.id ?? "");
   const [cat, setCat] = useState<Category | "All">("All");
+  const [sortBy, setSortBy] = useState<"distance" | "date" | "deadline">("distance");
   const [currentLocation, setCurrentLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationStatus, setLocationStatus] = useState<"loading" | "ready" | "denied">("loading");
 
@@ -70,11 +71,17 @@ function Nearby() {
       events
         .filter((e) => cat === "All" || e.category === cat)
         .sort((a, b) => {
+          if (sortBy === "date") {
+            return +new Date(a.start) - +new Date(b.start);
+          }
+          if (sortBy === "deadline") {
+            return +new Date(a.deadline) - +new Date(b.deadline);
+          }
           const aCollege = collegeById(a.collegeId);
           const bCollege = collegeById(b.collegeId);
           return haversineKm(origin, aCollege) - haversineKm(origin, bCollege);
         }),
-    [cat, events, origin],
+    [cat, events, origin, sortBy],
   );
 
   const selected = events.find((e) => e.id === sel) || evs[0] || events[0];
@@ -85,9 +92,13 @@ function Nearby() {
       <PageHeader
         title="Transit Radar & Real Map"
         subtitle={
-          locationStatus === "ready"
-            ? "Upcoming events sorted by distance from your current location."
-            : "Upcoming events sorted by distance from central Delhi."
+          sortBy === "date"
+            ? "Upcoming events sorted chronologically by event start date."
+            : sortBy === "deadline"
+              ? "Upcoming events sorted by nearest registration deadline."
+              : locationStatus === "ready"
+                ? "Upcoming events sorted by distance from your current location."
+                : "Upcoming events sorted by distance from central Delhi."
         }
       />
 
@@ -139,14 +150,62 @@ function Nearby() {
         {/* Right: Event List & Can I Make It check */}
         <div className="lg:col-span-5 space-y-4">
           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-foreground">Select Venue / Event</span>
-              <span className="text-[11px] text-muted-foreground">Sorted by distance</span>
+            {/* Header with Sort Selector */}
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+              <div>
+                <span className="text-xs font-semibold text-foreground">Select Venue / Event</span>
+                <p className="text-[10px] text-muted-foreground">
+                  {sortBy === "distance"
+                    ? "Sorted by distance"
+                    : sortBy === "date"
+                      ? "Sorted by start date"
+                      : "Sorted by deadline"}
+                </p>
+              </div>
+
+              {/* Sort By Toggle Options */}
+              <div className="flex items-center gap-1 rounded-lg bg-muted/80 p-0.5 text-[11px] font-medium">
+                <button
+                  type="button"
+                  onClick={() => setSortBy("distance")}
+                  className={`rounded-md px-2 py-1 transition-all ${
+                    sortBy === "distance"
+                      ? "bg-background text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title="Sort by proximity / distance"
+                >
+                  Distance
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSortBy("date")}
+                  className={`rounded-md px-2 py-1 transition-all ${
+                    sortBy === "date"
+                      ? "bg-background text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title="Sort by event start date"
+                >
+                  Date
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSortBy("deadline")}
+                  className={`rounded-md px-2 py-1 transition-all ${
+                    sortBy === "deadline"
+                      ? "bg-background text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                  title="Sort by registration deadline"
+                >
+                  Deadline
+                </button>
+              </div>
             </div>
 
             <div className="max-h-80 divide-y divide-border/60 overflow-y-auto rounded-xl border border-border/80">
               {evs.map((e) => {
-                const t = travelEstimate(profile.collegeId, e.collegeId);
                 const distance = haversineKm(origin, collegeById(e.collegeId));
                 const isSelected = sel === e.id;
                 return (
@@ -169,9 +228,18 @@ function Nearby() {
                         {formatDistance(distance)}
                       </p>
                     </div>
-                    <Chip tone={distance <= 5 ? "success" : distance <= 15 ? "default" : "warning"}>
-                      {formatDistance(distance)}
-                    </Chip>
+
+                    <div className="flex flex-col items-end gap-1">
+                      {sortBy === "date" ? (
+                        <Chip tone="primary">{fmtDate(e.start)}</Chip>
+                      ) : sortBy === "deadline" ? (
+                        <Chip tone="warning">{fmtDate(e.deadline)}</Chip>
+                      ) : (
+                        <Chip tone={distance <= 5 ? "success" : distance <= 15 ? "default" : "warning"}>
+                          {formatDistance(distance)}
+                        </Chip>
+                      )}
+                    </div>
                   </button>
                 );
               })}
